@@ -52,7 +52,7 @@ export const facts = [
   {
     id: 6,
     icon: "❤️",
-    text: "[Your Meeting Date]",
+    text: "18th October 2023",
     subtext: "The day my world changed",
     animation: "heartBeat",
     interactive: true
