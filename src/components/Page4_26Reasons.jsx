@@ -64,10 +64,11 @@ const Page4_26Reasons = () => {
     }
   }, [poppedBalloons])
 
-  // Background music for page 4
+  // Background music for page 4 - only run once on mount
   useEffect(() => {
     playPageAudio(4, '/audio/page4-26reasons.mp3')
-  }, [playPageAudio])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleBalloonClick = (balloonId) => {
     const balloon = balloons.find(b => b.id === balloonId)

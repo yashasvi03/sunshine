@@ -127,10 +127,11 @@ const Page5_Timeline = () => {
     }
   }, [showValentineQuestion])
 
-  // Background music for page 5
+  // Background music for page 5 - only run once on mount
   useEffect(() => {
     playPageAudio(5, '/audio/page5-timeline.mp3')
-  }, [playPageAudio])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#FFF8F0] via-[#FFE4D6] to-[#FFD6C8] overflow-x-auto md:overflow-y-hidden relative pt-16">

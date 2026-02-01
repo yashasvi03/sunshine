@@ -37,10 +37,11 @@ const Page1_Unlock = () => {
     return () => clearTimeout(timer)
   }, [isCorrect])
 
-  // Background music - shared across pages 1-3
+  // Background music - shared across pages 1-3, only run once on mount
   useEffect(() => {
     playPageAudio(1, '/audio/pages-1-3-shared.mp3')
-  }, [playPageAudio])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleSubmit = (e) => {
     e.preventDefault()

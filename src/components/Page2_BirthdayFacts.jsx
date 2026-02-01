@@ -50,10 +50,11 @@ const Page2_BirthdayFacts = () => {
     }
   }, [currentFactIndex, showCalendar])
 
-  // Background music - shared across pages 1-3
+  // Background music - shared across pages 1-3, only run once on mount
   useEffect(() => {
     playPageAudio(2, '/audio/pages-1-3-shared.mp3')
-  }, [playPageAudio])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleNext = () => {
     if (currentFactIndex < facts.length - 1) {

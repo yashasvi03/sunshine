@@ -58,10 +58,11 @@ const Page3_Countdown = () => {
     return () => clearTimeout(messageTimer)
   }, [])
 
-  // Background music - shared across pages 1-3
+  // Background music - shared across pages 1-3, only run once on mount
   useEffect(() => {
     playPageAudio(3, '/audio/pages-1-3-shared.mp3')
-  }, [playPageAudio])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // Component for individual digit with flip animation
   const FlipDigit = ({ digit, delay }) => {
