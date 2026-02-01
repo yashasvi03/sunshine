@@ -4,6 +4,7 @@ import Page2_BirthdayFacts from './components/Page2_BirthdayFacts'
 import Page3_Countdown from './components/Page3_Countdown'
 import Page4_26Reasons from './components/Page4_26Reasons'
 import Page5_Timeline from './components/Page5_Timeline'
+import Page6_BirthdayCake from './components/Page6_BirthdayCake'
 import { personalInfo } from './data/personalInfo'
 
 function App() {
@@ -40,7 +41,7 @@ function App() {
       case 5:
         return <Page5_Timeline onComplete={goToNextPage} />
       case 6:
-        return <div className="min-h-screen flex items-center justify-center text-white">Page 6 - Coming Soon</div>
+        return <Page6_BirthdayCake onComplete={goToNextPage} />
       case 7:
         return <div className="min-h-screen flex items-center justify-center text-white">Page 7 - Coming Soon</div>
       default:
