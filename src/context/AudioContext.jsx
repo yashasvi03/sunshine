@@ -33,7 +33,8 @@ export const AudioProvider = ({ children }) => {
 
   const playPageAudio = useCallback((pageNumber, audioSrc) => {
     if (!audioRef.current) {
-      console.warn('Audio element not initialized yet')
+      console.warn('Audio element not initialized yet, saving for later')
+      pendingPlayRef.current = { pageNumber, audioSrc }
       return
     }
 
@@ -56,14 +57,19 @@ export const AudioProvider = ({ children }) => {
         audioRef.current.src = audioSrc
       }
 
-      audioRef.current.play().then(() => {
-        console.log('Audio started successfully for page', pageNumber)
-        setIsPlaying(true)
-        setCurrentPage(pageNumber)
-      }).catch(err => {
-        console.log('Audio play failed, waiting for user interaction:', err)
-        pendingPlayRef.current = { pageNumber, audioSrc }
-      })
+      // Try to play immediately
+      const playPromise = audioRef.current.play()
+
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          console.log('Audio started successfully for page', pageNumber)
+          setIsPlaying(true)
+          setCurrentPage(pageNumber)
+        }).catch(err => {
+          console.log('Audio play failed, will retry on user interaction:', err)
+          pendingPlayRef.current = { pageNumber, audioSrc }
+        })
+      }
     } else {
       // For other pages, stop current audio and play new one
       const fullSrc = window.location.origin + audioSrc
@@ -71,18 +77,24 @@ export const AudioProvider = ({ children }) => {
         audioRef.current.src = audioSrc
         audioRef.current.currentTime = 0
       }
-      audioRef.current.play().then(() => {
-        console.log('Audio started successfully for page', pageNumber)
-        setIsPlaying(true)
-        setCurrentPage(pageNumber)
-      }).catch(err => {
-        console.log('Audio play failed, waiting for user interaction:', err)
-        pendingPlayRef.current = { pageNumber, audioSrc }
-      })
+
+      // Try to play immediately
+      const playPromise = audioRef.current.play()
+
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          console.log('Audio started successfully for page', pageNumber)
+          setIsPlaying(true)
+          setCurrentPage(pageNumber)
+        }).catch(err => {
+          console.log('Audio play failed, will retry on user interaction:', err)
+          pendingPlayRef.current = { pageNumber, audioSrc }
+        })
+      }
     }
   }, [currentPage, isPlaying])
 
-  // Set up user interaction listener for autoplay
+  // Set up user interaction listener for autoplay - very aggressive
   useEffect(() => {
     const handleInteraction = () => {
       if (pendingPlayRef.current) {
@@ -91,16 +103,29 @@ export const AudioProvider = ({ children }) => {
         playPageAudio(pageNumber, audioSrc)
         pendingPlayRef.current = null
       }
-      document.removeEventListener('click', handleInteraction)
-      document.removeEventListener('keydown', handleInteraction)
     }
 
+    // Listen to multiple interaction types for maximum coverage
     document.addEventListener('click', handleInteraction)
     document.addEventListener('keydown', handleInteraction)
+    document.addEventListener('touchstart', handleInteraction)
+    document.addEventListener('mousemove', handleInteraction, { once: true })
+
+    // Also try to play pending audio after a short delay
+    const retryTimer = setTimeout(() => {
+      if (pendingPlayRef.current) {
+        console.log('Attempting to play pending audio after delay')
+        const { pageNumber, audioSrc } = pendingPlayRef.current
+        playPageAudio(pageNumber, audioSrc)
+      }
+    }, 500)
 
     return () => {
       document.removeEventListener('click', handleInteraction)
       document.removeEventListener('keydown', handleInteraction)
+      document.removeEventListener('touchstart', handleInteraction)
+      document.removeEventListener('mousemove', handleInteraction)
+      clearTimeout(retryTimer)
     }
   }, [playPageAudio])
 
