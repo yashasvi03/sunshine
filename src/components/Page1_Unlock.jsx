@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
+import { useAudio } from '../context/AudioContext'
 import Navigation from './Navigation'
 import '../styles/animations.css'
 
 const Page1_Unlock = () => {
   const navigate = useNavigate()
+  const { playPageAudio } = useAudio()
   const [inputValue, setInputValue] = useState('')
   const [isCorrect, setIsCorrect] = useState(false)
   const [showError, setShowError] = useState(false)
@@ -34,6 +36,11 @@ const Page1_Unlock = () => {
     }, 10000)
     return () => clearTimeout(timer)
   }, [isCorrect])
+
+  // Background music - shared across pages 1-3
+  useEffect(() => {
+    playPageAudio(1, '/audio/pages-1-3-shared.mp3')
+  }, [])
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -66,6 +73,7 @@ const Page1_Unlock = () => {
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-b from-deep-purple via-[#1a1a3e] to-navy-blue flex items-center justify-center pt-16">
       <Navigation />
+
       {/* Enhanced Twinkling Stars Background */}
       <div className="absolute inset-0">
         {stars.map(star => (

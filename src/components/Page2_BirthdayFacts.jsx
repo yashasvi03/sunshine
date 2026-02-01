@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import confetti from 'canvas-confetti'
+import { useAudio } from '../context/AudioContext'
 import Navigation from './Navigation'
 import { facts, birthdayFacts } from '../data/birthdayFacts'
 import { personalInfo } from '../data/personalInfo'
 
 const Page2_BirthdayFacts = () => {
   const navigate = useNavigate()
+  const { playPageAudio } = useAudio()
   const [showCalendar, setShowCalendar] = useState(true)
   const [currentFactIndex, setCurrentFactIndex] = useState(0)
   const [calendarMonth, setCalendarMonth] = useState(1)
@@ -48,6 +50,11 @@ const Page2_BirthdayFacts = () => {
     }
   }, [currentFactIndex, showCalendar])
 
+  // Background music - shared across pages 1-3
+  useEffect(() => {
+    playPageAudio(2, '/audio/pages-1-3-shared.mp3')
+  }, [])
+
   const handleNext = () => {
     if (currentFactIndex < facts.length - 1) {
       setCurrentFactIndex(prev => prev + 1)
@@ -69,6 +76,7 @@ const Page2_BirthdayFacts = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#FFF5F7] via-[#FFE5EC] to-[#FFD6E8] flex flex-col items-center justify-center p-6 relative overflow-hidden pt-16">
       <Navigation />
+
       {/* Floating hearts background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {[...Array(20)].map((_, i) => (

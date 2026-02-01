@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import confetti from 'canvas-confetti'
@@ -9,6 +9,12 @@ const Page5_Timeline = () => {
   const navigate = useNavigate()
   const [activeNodeIndex, setActiveNodeIndex] = useState(0)
   const [fullscreenImage, setFullscreenImage] = useState(null)
+  const [showValentineQuestion, setShowValentineQuestion] = useState(true)
+  const [noButtonPosition, setNoButtonPosition] = useState({ x: 0, y: 0 })
+  const [yesButtonScale, setYesButtonScale] = useState(1)
+  const noButtonRef = useRef(null)
+  const yesButtonRef = useRef(null)
+  const audioRef = useRef(null)
 
   const handleNodeClick = (index) => {
     setActiveNodeIndex(index)
@@ -40,6 +46,66 @@ const Page5_Timeline = () => {
     setFullscreenImage(null)
   }
 
+  const handleYesClick = () => {
+    // Celebration confetti
+    confetti({
+      particleCount: 200,
+      spread: 120,
+      origin: { y: 0.5 },
+      colors: ['#FFD700', '#FF1493', '#FF69B4', '#FFC0CB', '#FFB6C1']
+    })
+    setTimeout(() => {
+      setShowValentineQuestion(false)
+    }, 500)
+  }
+
+  const handleMouseMove = (e) => {
+    if (!showValentineQuestion) return
+
+    // Check distance to No button
+    if (noButtonRef.current) {
+      const rect = noButtonRef.current.getBoundingClientRect()
+      const buttonCenterX = rect.left + rect.width / 2
+      const buttonCenterY = rect.top + rect.height / 2
+      const distance = Math.sqrt(
+        Math.pow(e.clientX - buttonCenterX, 2) + Math.pow(e.clientY - buttonCenterY, 2)
+      )
+
+      // If cursor is within 150px of No button, move it
+      if (distance < 150) {
+        const modalElement = noButtonRef.current.closest('.valentine-modal')
+        if (modalElement) {
+          const modalRect = modalElement.getBoundingClientRect()
+          const maxX = modalRect.width - rect.width - 40
+          const maxY = modalRect.height - rect.height - 40
+
+          setNoButtonPosition({
+            x: Math.random() * maxX - maxX / 2,
+            y: Math.random() * maxY - maxY / 2
+          })
+        }
+      }
+    }
+
+    // Check distance to Yes button for scaling
+    if (yesButtonRef.current) {
+      const rect = yesButtonRef.current.getBoundingClientRect()
+      const buttonCenterX = rect.left + rect.width / 2
+      const buttonCenterY = rect.top + rect.height / 2
+      const distance = Math.sqrt(
+        Math.pow(e.clientX - buttonCenterX, 2) + Math.pow(e.clientY - buttonCenterY, 2)
+      )
+
+      // Scale Yes button based on proximity (closer = bigger)
+      if (distance < 200) {
+        const scale = 1 + (200 - distance) / 100
+        setYesButtonScale(Math.min(scale, 2.5))
+      } else {
+        setYesButtonScale(1)
+      }
+    }
+  }
+
   // ESC key handler for closing fullscreen
   useEffect(() => {
     const handleEscape = (e) => {
@@ -52,9 +118,146 @@ const Page5_Timeline = () => {
     return () => window.removeEventListener('keydown', handleEscape)
   }, [fullscreenImage])
 
+  // Mouse move handler for Valentine buttons
+  useEffect(() => {
+    if (showValentineQuestion) {
+      window.addEventListener('mousemove', handleMouseMove)
+      return () => window.removeEventListener('mousemove', handleMouseMove)
+    }
+  }, [showValentineQuestion])
+
+  // Background music
+  useEffect(() => {
+    const playAudio = () => {
+      if (audioRef.current) {
+        audioRef.current.play().catch(err => {
+          console.log('Audio play failed:', err)
+        })
+      }
+    }
+
+    playAudio()
+
+    const handleInteraction = () => {
+      playAudio()
+      document.removeEventListener('click', handleInteraction)
+    }
+    document.addEventListener('click', handleInteraction)
+
+    return () => {
+      document.removeEventListener('click', handleInteraction)
+      if (audioRef.current) {
+        audioRef.current.pause()
+      }
+    }
+  }, [])
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#FFF8F0] via-[#FFE4D6] to-[#FFD6C8] overflow-x-auto md:overflow-y-hidden relative pt-16">
       <Navigation />
+
+      {/* Background Music */}
+      <audio ref={audioRef} loop>
+        <source src="/audio/page5-timeline.mp3" type="audio/mpeg" />
+      </audio>
+
+      {/* Valentine Question Modal */}
+      <AnimatePresence>
+        {showValentineQuestion && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="valentine-modal relative bg-gradient-to-br from-pink-100 via-rose-100 to-red-100 rounded-3xl shadow-2xl p-12 max-w-2xl mx-4 border-4 border-pink-300"
+              initial={{ scale: 0.5, rotate: -10 }}
+              animate={{ scale: 1, rotate: 0 }}
+              exit={{ scale: 0.5, rotate: 10 }}
+              transition={{ type: 'spring', damping: 15 }}
+            >
+              {/* Floating hearts in modal */}
+              <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-3xl">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute text-3xl"
+                    style={{
+                      left: `${Math.random() * 100}%`,
+                      top: `${Math.random() * 100}%`,
+                    }}
+                    animate={{
+                      y: [0, -20, 0],
+                      rotate: [0, 10, -10, 0],
+                      scale: [1, 1.2, 1]
+                    }}
+                    transition={{
+                      duration: 2 + Math.random() * 2,
+                      repeat: Infinity,
+                      delay: i * 0.3
+                    }}
+                  >
+                    💕
+                  </motion.div>
+                ))}
+              </div>
+
+              <motion.h2
+                className="text-5xl md:text-6xl font-bold text-center mb-8 text-transparent bg-gradient-to-r from-pink-600 via-rose-500 to-red-500 bg-clip-text"
+                animate={{
+                  scale: [1, 1.05, 1],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity
+                }}
+              >
+                Will you be my Valentine? 💝
+              </motion.h2>
+
+              <div className="flex gap-8 justify-center items-center mt-12 relative min-h-[100px]">
+                {/* Yes Button */}
+                <motion.button
+                  ref={yesButtonRef}
+                  onClick={handleYesClick}
+                  className="px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-2xl font-bold rounded-full shadow-lg hover:shadow-2xl transition-shadow"
+                  style={{
+                    scale: yesButtonScale,
+                  }}
+                  whileHover={{ rotate: [0, -5, 5, -5, 0] }}
+                  transition={{ type: 'spring', stiffness: 300 }}
+                >
+                  Yes! 💚
+                </motion.button>
+
+                {/* No Button - moves away */}
+                <motion.button
+                  ref={noButtonRef}
+                  className="px-8 py-4 bg-gradient-to-r from-gray-400 to-gray-500 text-white text-2xl font-bold rounded-full shadow-lg"
+                  animate={{
+                    x: noButtonPosition.x,
+                    y: noButtonPosition.y
+                  }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                >
+                  No
+                </motion.button>
+              </div>
+
+              <motion.p
+                className="text-center mt-8 text-pink-600 font-semibold text-lg"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1 }}
+              >
+                (Try to click No... I dare you! 😏)
+              </motion.p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Animated Background Elements */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {/* Floating hearts */}
@@ -115,8 +318,12 @@ const Page5_Timeline = () => {
         <div className="absolute bottom-20 right-10 w-80 h-80 bg-rose-200 rounded-full blur-[100px] opacity-25" style={{ animationDelay: '1.5s' }} />
         <div className="absolute top-1/2 left-1/3 w-72 h-72 bg-orange-200 rounded-full blur-[110px] opacity-20 animate-pulse" style={{ animationDelay: '3s' }} />
       </div>
-      {/* Desktop: Horizontal Timeline */}
-      <div className="hidden md:flex items-center min-h-screen px-12 py-12 relative z-10 overflow-x-auto">
+
+      {/* Timeline Content - Only show after Valentine question */}
+      {!showValentineQuestion && (
+        <>
+          {/* Desktop: Horizontal Timeline */}
+          <div className="hidden md:flex items-center min-h-screen px-12 py-12 relative z-10 overflow-x-auto">
         <div className="flex items-center space-x-24 min-w-max relative pr-12">
           {/* Timeline Line - spans full content width */}
           <div className="absolute left-0 right-0 top-1/2 transform -translate-y-1/2" style={{ zIndex: -1 }}>
@@ -576,6 +783,8 @@ const Page5_Timeline = () => {
           ))}
         </div>
       </div>
+        </>
+      )}
 
       {/* Fullscreen Image Overlay */}
       <AnimatePresence>

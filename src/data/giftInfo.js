@@ -35,8 +35,8 @@ export const giftInfo = {
     title: "Your Real Gift Awaits...",
     icon: "🎁",
     location: "Check under your pillow",
-    hint: "It's something you love way too much (besides me, of course!)",
-    additionalMessage: "(or wherever I hid it 😉)"
+    hint: "(or wherever I hid it 😉)",
+    additionalMessage: "It's something you love way too much (besides me, of course)"
   },
 
   // For COUPON BOOK:

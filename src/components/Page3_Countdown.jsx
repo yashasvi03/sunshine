@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
+import { useAudio } from '../context/AudioContext'
 import Navigation from './Navigation'
 import { personalInfo } from '../data/personalInfo'
 
 const Page3_Countdown = () => {
   const navigate = useNavigate()
+  const { playPageAudio } = useAudio()
   const [timeData, setTimeData] = useState({ days: 0, hours: 0, minutes: 0 })
   const [showMessage, setShowMessage] = useState(false)
   const [showButton, setShowButton] = useState(false)
@@ -56,6 +58,11 @@ const Page3_Countdown = () => {
     return () => clearTimeout(messageTimer)
   }, [])
 
+  // Background music - shared across pages 1-3
+  useEffect(() => {
+    playPageAudio(3, '/audio/pages-1-3-shared.mp3')
+  }, [])
+
   // Component for individual digit with flip animation
   const FlipDigit = ({ digit, delay }) => {
     return (
@@ -94,6 +101,7 @@ const Page3_Countdown = () => {
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#FFF0F5] via-[#FFE4EC] to-[#FFD6E8] flex flex-col pt-16">
       <Navigation />
+
       {/* Floating Particles */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {Array.from({ length: 25 }).map((_, i) => (
