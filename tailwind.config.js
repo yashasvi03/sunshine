@@ -16,6 +16,9 @@ export default {
         'display': ['Georgia', 'serif'],
         'body': ['Arial', 'sans-serif'],
       },
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+      },
     },
   },
   plugins: [],

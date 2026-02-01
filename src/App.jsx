@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Page1_Unlock from './components/Page1_Unlock'
 import Page2_BirthdayFacts from './components/Page2_BirthdayFacts'
+import Page3_Countdown from './components/Page3_Countdown'
 import { personalInfo } from './data/personalInfo'
 
 function App() {
@@ -31,7 +32,7 @@ function App() {
       case 2:
         return <Page2_BirthdayFacts onComplete={goToNextPage} />
       case 3:
-        return <div className="min-h-screen flex items-center justify-center text-white">Page 3 - Coming Soon</div>
+        return <Page3_Countdown onComplete={goToNextPage} />
       case 4:
         return <div className="min-h-screen flex items-center justify-center text-white">Page 4 - Coming Soon</div>
       case 5:
