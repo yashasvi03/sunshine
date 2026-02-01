@@ -9,6 +9,8 @@ const Page4_26Reasons = ({ onComplete }) => {
   const [activeReason, setActiveReason] = useState(null)
   const [allComplete, setAllComplete] = useState(false)
   const [showInstruction, setShowInstruction] = useState(true)
+  const [showList, setShowList] = useState(false)
+  const [isPopping, setIsPopping] = useState(false)
 
   // Load popped balloons from localStorage on mount
   useEffect(() => {
@@ -25,10 +27,10 @@ const Page4_26Reasons = ({ onComplete }) => {
   useEffect(() => {
     const initialBalloons = reasons.map((reason, index) => ({
       ...reason,
-      x: 8 + (Math.random() * 84), // Random x position (8-92%)
-      y: 15 + (Math.random() * 70), // Random y position (15-85%)
-      size: index < 10 ? 100 : 85, // Larger for early numbers
-      bobSpeed: 3 + Math.random() * 2, // Random bob speed (3-5s)
+      x: 8 + (Math.random() * 84),
+      y: 15 + (Math.random() * 70),
+      size: index < 10 ? 100 : 85,
+      bobSpeed: 3 + Math.random() * 2,
       bobDelay: Math.random() * 2,
       sway: Math.random() * 15 - 7.5,
       rotation: Math.random() * 10 - 5
@@ -46,7 +48,7 @@ const Page4_26Reasons = ({ onComplete }) => {
     }
   }, [poppedBalloons.length])
 
-  // Save popped balloons to localStorage whenever it changes
+  // Save popped balloons to localStorage
   useEffect(() => {
     if (poppedBalloons.length > 0) {
       localStorage.setItem('poppedBalloons', JSON.stringify(poppedBalloons))
@@ -59,7 +61,7 @@ const Page4_26Reasons = ({ onComplete }) => {
       // Add to popped list
       setPoppedBalloons(prev => [...prev, balloonId])
 
-      // Confetti burst at balloon location
+      // Confetti burst
       const balloonElement = document.getElementById(`balloon-${balloonId}`)
       if (balloonElement) {
         const rect = balloonElement.getBoundingClientRect()
@@ -79,6 +81,39 @@ const Page4_26Reasons = ({ onComplete }) => {
         setActiveReason(balloon)
       }, 300)
     }
+  }
+
+  const handlePopAll = () => {
+    if (poppedBalloons.length === 26) return
+
+    setIsPopping(true)
+    const unpoppedIds = reasons
+      .filter(r => !poppedBalloons.includes(r.id))
+      .map(r => r.id)
+
+    // Pop them one by one with animation
+    unpoppedIds.forEach((id, index) => {
+      setTimeout(() => {
+        setPoppedBalloons(prev => [...prev, id])
+
+        // Confetti for each
+        const balloon = balloons.find(b => b.id === id)
+        if (balloon) {
+          confetti({
+            particleCount: 20,
+            spread: 60,
+            origin: { x: Math.random(), y: Math.random() * 0.6 + 0.2 },
+            colors: [balloon.color, '#FFD700', '#FF69B4']
+          })
+        }
+      }, index * 100)
+    })
+
+    // Show list after all are popped
+    setTimeout(() => {
+      setIsPopping(false)
+      setShowList(true)
+    }, unpoppedIds.length * 100 + 500)
   }
 
   const closeReasonCard = () => {
@@ -116,12 +151,16 @@ const Page4_26Reasons = ({ onComplete }) => {
     if (window.confirm('Are you sure you want to reset all balloons? This cannot be undone.')) {
       setPoppedBalloons([])
       setAllComplete(false)
+      setShowList(false)
       localStorage.removeItem('poppedBalloons')
     }
   }
 
+  // Get reason by ID
+  const getReasonById = (id) => reasons.find(r => r.id === id)
+
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#FFF0F5] via-[#FFE4F1] to-[#FFD6E8]">
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#FFF0F5] via-[#FFE4F1] to-[#FFD6E8] flex">
       {/* Animated sky background */}
       <div className="absolute inset-0 overflow-hidden">
         {/* Clouds */}
@@ -196,200 +235,327 @@ const Page4_26Reasons = ({ onComplete }) => {
         ))}
       </div>
 
-      {/* Header with counter */}
-      <motion.div
-        className="relative z-20 pt-6 px-6"
-        initial={{ opacity: 0, y: -30 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
-        <div className="flex items-center justify-between max-w-6xl mx-auto">
-          {/* Progress Counter */}
-          <motion.div
-            className="bg-white/90 backdrop-blur-md rounded-full px-8 py-4 shadow-xl border-2 border-pink-300"
-            animate={{
-              boxShadow: [
-                '0 10px 30px rgba(255,105,180,0.3)',
-                '0 15px 40px rgba(255,105,180,0.5)',
-                '0 10px 30px rgba(255,105,180,0.3)'
-              ]
-            }}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
-            <div className="flex items-center gap-3">
-              <span className="text-4xl">💝</span>
-              <div>
-                <div className="text-sm text-gray-600 font-medium">Reasons Discovered</div>
-                <motion.div
-                  className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent"
-                  key={poppedBalloons.length}
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 0.3 }}
-                >
-                  {poppedBalloons.length} / 26
-                </motion.div>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Reset Button - only show if some are popped */}
-          {poppedBalloons.length > 0 && poppedBalloons.length < 26 && (
-            <motion.button
-              onClick={resetProgress}
-              className="bg-white/90 backdrop-blur-md rounded-full px-6 py-3 shadow-lg border border-gray-300 hover:border-pink-400 transition-colors"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-            >
-              <span className="text-gray-700 font-medium">🔄 Reset</span>
-            </motion.button>
-          )}
-        </div>
-      </motion.div>
-
-      {/* Instruction */}
-      <AnimatePresence>
-        {showInstruction && poppedBalloons.length === 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="absolute top-32 left-0 right-0 text-center z-20"
-          >
-            <div className="inline-block bg-white/90 backdrop-blur-md rounded-2xl px-8 py-4 shadow-xl border-2 border-pink-300">
-              <p className="text-xl md:text-2xl font-bold text-purple-600">
-                Tap the balloons to discover 26 reasons why you're incredible! 🎈
-              </p>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Balloons */}
-      <div className="relative h-screen pt-32 pb-20">
-        {balloons.map((balloon) => {
-          const isPopped = poppedBalloons.includes(balloon.id)
-
-          return !isPopped ? (
+      {/* Main Balloon Area */}
+      <div className="flex-1 relative">
+        {/* Header with controls */}
+        <motion.div
+          className="relative z-20 pt-6 px-6"
+          initial={{ opacity: 0, y: -30 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <div className="flex items-center justify-between max-w-6xl mx-auto flex-wrap gap-3">
+            {/* Progress Counter */}
             <motion.div
-              key={balloon.id}
-              id={`balloon-${balloon.id}`}
-              className="absolute cursor-pointer"
-              style={{
-                left: `${balloon.x}%`,
-                top: `${balloon.y}%`,
-                width: `${balloon.size}px`,
-                zIndex: 30 - balloon.id
-              }}
+              className="bg-white/90 backdrop-blur-md rounded-full px-6 py-3 shadow-xl border-2 border-pink-300"
               animate={{
-                y: [0, balloon.sway, 0],
-                rotate: [balloon.rotation, balloon.rotation + 3, balloon.rotation]
+                boxShadow: [
+                  '0 10px 30px rgba(255,105,180,0.3)',
+                  '0 15px 40px rgba(255,105,180,0.5)',
+                  '0 10px 30px rgba(255,105,180,0.3)'
+                ]
               }}
-              transition={{
-                duration: balloon.bobSpeed,
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: balloon.bobDelay
-              }}
-              whileHover={{ scale: 1.15, rotate: 0, zIndex: 50 }}
-              onClick={() => handleBalloonClick(balloon.id)}
+              transition={{ duration: 2, repeat: Infinity }}
             >
-              {/* Balloon SVG */}
-              <svg viewBox="0 0 100 140" className="drop-shadow-2xl filter">
-                <defs>
-                  <radialGradient id={`grad-${balloon.id}`} cx="30%" cy="30%">
-                    <stop offset="0%" style={{ stopColor: '#ffffff', stopOpacity: 0.8 }} />
-                    <stop offset="50%" style={{ stopColor: balloon.color, stopOpacity: 0.9 }} />
-                    <stop offset="100%" style={{ stopColor: balloon.color, stopOpacity: 1 }} />
-                  </radialGradient>
-                  <filter id={`shadow-${balloon.id}`}>
-                    <feDropShadow dx="0" dy="4" stdDeviation="3" floodOpacity="0.3"/>
-                  </filter>
-                </defs>
+              <div className="flex items-center gap-2">
+                <span className="text-3xl">💝</span>
+                <div>
+                  <div className="text-xs text-gray-600 font-medium">Discovered</div>
+                  <motion.div
+                    className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent"
+                    key={poppedBalloons.length}
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {poppedBalloons.length}/26
+                  </motion.div>
+                </div>
+              </div>
+            </motion.div>
 
-                {/* Balloon body */}
-                <ellipse
-                  cx="50"
-                  cy="50"
-                  rx="38"
-                  ry="48"
-                  fill={`url(#grad-${balloon.id})`}
-                  stroke="rgba(0,0,0,0.1)"
-                  strokeWidth="1"
-                  filter={`url(#shadow-${balloon.id})`}
-                />
+            {/* Action Buttons */}
+            <div className="flex gap-2">
+              {/* Toggle List Button */}
+              {poppedBalloons.length > 0 && (
+                <motion.button
+                  onClick={() => setShowList(!showList)}
+                  className={`backdrop-blur-md rounded-full px-4 py-2 shadow-lg border transition-colors ${
+                    showList
+                      ? 'bg-purple-500 border-purple-600 text-white'
+                      : 'bg-white/90 border-gray-300 text-gray-700 hover:border-purple-400'
+                  }`}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                >
+                  <span className="font-medium text-sm">
+                    {showList ? '🎈 Hide List' : '📝 Show List'}
+                  </span>
+                </motion.button>
+              )}
 
-                {/* Highlight */}
-                <ellipse
-                  cx="38"
-                  cy="35"
-                  rx="12"
-                  ry="18"
-                  fill="rgba(255,255,255,0.6)"
-                />
+              {/* Pop All Button */}
+              {poppedBalloons.length < 26 && (
+                <motion.button
+                  onClick={handlePopAll}
+                  disabled={isPopping}
+                  className="bg-gradient-to-r from-pink-500 to-purple-500 text-white backdrop-blur-md rounded-full px-4 py-2 shadow-lg border-2 border-white/50 hover:shadow-xl transition-all disabled:opacity-50"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1 }}
+                >
+                  <span className="font-bold text-sm">
+                    {isPopping ? '🎈 Popping...' : '💥 Pop All'}
+                  </span>
+                </motion.button>
+              )}
 
-                {/* Small highlight */}
-                <ellipse
-                  cx="60"
-                  cy="45"
-                  rx="6"
-                  ry="8"
-                  fill="rgba(255,255,255,0.3)"
-                />
+              {/* Reset Button */}
+              {poppedBalloons.length > 0 && poppedBalloons.length < 26 && (
+                <motion.button
+                  onClick={resetProgress}
+                  className="bg-white/90 backdrop-blur-md rounded-full px-4 py-2 shadow-lg border border-gray-300 hover:border-pink-400 transition-colors"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <span className="text-gray-700 font-medium text-sm">🔄 Reset</span>
+                </motion.button>
+              )}
+            </div>
+          </div>
+        </motion.div>
 
-                {/* Knot */}
-                <path
-                  d="M 50 98 Q 45 103 50 108"
-                  fill={balloon.color}
-                  stroke="rgba(0,0,0,0.2)"
-                  strokeWidth="1"
-                  filter={`url(#shadow-${balloon.id})`}
-                />
+        {/* Instruction */}
+        <AnimatePresence>
+          {showInstruction && poppedBalloons.length === 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="absolute top-28 left-0 right-0 text-center z-20 px-6"
+            >
+              <div className="inline-block bg-white/90 backdrop-blur-md rounded-2xl px-6 py-3 shadow-xl border-2 border-pink-300 max-w-2xl">
+                <p className="text-lg md:text-xl font-bold text-purple-600">
+                  Tap balloons to discover 26 reasons! 🎈 Use "Pop All" to reveal everything at once!
+                </p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-                {/* String */}
-                <motion.line
-                  x1="50"
-                  y1="108"
-                  x2="50"
-                  y2="135"
-                  stroke="rgba(100,100,100,0.4)"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
+        {/* Balloons */}
+        <div className="relative h-screen pt-32 pb-20">
+          {balloons.map((balloon) => {
+            const isPopped = poppedBalloons.includes(balloon.id)
+
+            return !isPopped ? (
+              <motion.div
+                key={balloon.id}
+                id={`balloon-${balloon.id}`}
+                className="absolute cursor-pointer"
+                style={{
+                  left: `${balloon.x}%`,
+                  top: `${balloon.y}%`,
+                  width: `${balloon.size}px`,
+                  zIndex: 30 - balloon.id
+                }}
+                animate={{
+                  y: [0, balloon.sway, 0],
+                  rotate: [balloon.rotation, balloon.rotation + 3, balloon.rotation]
+                }}
+                transition={{
+                  duration: balloon.bobSpeed,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: balloon.bobDelay
+                }}
+                whileHover={{ scale: 1.15, rotate: 0, zIndex: 50 }}
+                onClick={() => handleBalloonClick(balloon.id)}
+              >
+                {/* Balloon SVG */}
+                <svg viewBox="0 0 100 140" className="drop-shadow-2xl filter">
+                  <defs>
+                    <radialGradient id={`grad-${balloon.id}`} cx="30%" cy="30%">
+                      <stop offset="0%" style={{ stopColor: '#ffffff', stopOpacity: 0.8 }} />
+                      <stop offset="50%" style={{ stopColor: balloon.color, stopOpacity: 0.9 }} />
+                      <stop offset="100%" style={{ stopColor: balloon.color, stopOpacity: 1 }} />
+                    </radialGradient>
+                    <filter id={`shadow-${balloon.id}`}>
+                      <feDropShadow dx="0" dy="4" stdDeviation="3" floodOpacity="0.3"/>
+                    </filter>
+                  </defs>
+
+                  <ellipse
+                    cx="50"
+                    cy="50"
+                    rx="38"
+                    ry="48"
+                    fill={`url(#grad-${balloon.id})`}
+                    stroke="rgba(0,0,0,0.1)"
+                    strokeWidth="1"
+                    filter={`url(#shadow-${balloon.id})`}
+                  />
+
+                  <ellipse
+                    cx="38"
+                    cy="35"
+                    rx="12"
+                    ry="18"
+                    fill="rgba(255,255,255,0.6)"
+                  />
+
+                  <ellipse
+                    cx="60"
+                    cy="45"
+                    rx="6"
+                    ry="8"
+                    fill="rgba(255,255,255,0.3)"
+                  />
+
+                  <path
+                    d="M 50 98 Q 45 103 50 108"
+                    fill={balloon.color}
+                    stroke="rgba(0,0,0,0.2)"
+                    strokeWidth="1"
+                    filter={`url(#shadow-${balloon.id})`}
+                  />
+
+                  <motion.line
+                    x1="50"
+                    y1="108"
+                    x2="50"
+                    y2="135"
+                    stroke="rgba(100,100,100,0.4)"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    animate={{
+                      x2: [50, 48, 52, 50],
+                      y2: [135, 137, 133, 135]
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  />
+                </svg>
+
+                {/* Number badge */}
+                <motion.div
+                  className="absolute inset-0 flex items-center justify-center"
+                  style={{ top: '-8px' }}
                   animate={{
-                    x2: [50, 48, 52, 50],
-                    y2: [135, 137, 133, 135]
+                    scale: [1, 1.1, 1]
                   }}
                   transition={{
                     duration: 2,
                     repeat: Infinity,
-                    ease: "easeInOut"
+                    delay: balloon.bobDelay
                   }}
-                />
-              </svg>
-
-              {/* Number badge */}
-              <motion.div
-                className="absolute inset-0 flex items-center justify-center"
-                style={{ top: '-8px' }}
-                animate={{
-                  scale: [1, 1.1, 1]
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  delay: balloon.bobDelay
-                }}
-              >
-                <div className="w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center border-2 border-gray-200">
-                  <span className="text-2xl font-bold bg-gradient-to-br from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                    {balloon.id}
-                  </span>
-                </div>
+                >
+                  <div className="w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center border-2 border-gray-200">
+                    <span className="text-2xl font-bold bg-gradient-to-br from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                      {balloon.id}
+                    </span>
+                  </div>
+                </motion.div>
               </motion.div>
-            </motion.div>
-          ) : null
-        })}
+            ) : null
+          })}
+        </div>
       </div>
+
+      {/* Reasons List Sidebar */}
+      <AnimatePresence>
+        {showList && (
+          <motion.div
+            initial={{ x: 400, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: 400, opacity: 0 }}
+            transition={{ type: 'spring', damping: 25 }}
+            className="fixed right-0 top-0 bottom-0 w-full md:w-96 bg-white/95 backdrop-blur-lg shadow-2xl border-l-4 border-pink-400 z-40 overflow-hidden flex flex-col"
+          >
+            {/* List Header */}
+            <div className="bg-gradient-to-r from-pink-500 to-purple-500 p-6 text-white">
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="text-2xl font-bold">26 Reasons</h2>
+                <button
+                  onClick={() => setShowList(false)}
+                  className="text-white/80 hover:text-white text-3xl leading-none"
+                >
+                  ×
+                </button>
+              </div>
+              <p className="text-white/90 text-sm">
+                {poppedBalloons.length} of 26 discovered
+              </p>
+            </div>
+
+            {/* List Content */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+              {reasons.map((reason) => {
+                const isRevealed = poppedBalloons.includes(reason.id)
+
+                return (
+                  <motion.div
+                    key={reason.id}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: reason.id * 0.02 }}
+                    className={`rounded-xl p-4 border-2 transition-all ${
+                      isRevealed
+                        ? 'bg-gradient-to-br from-white to-pink-50 border-pink-300 shadow-md'
+                        : 'bg-gray-50 border-gray-200'
+                    }`}
+                  >
+                    <div className="flex gap-3">
+                      {/* Number Badge */}
+                      <div
+                        className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-bold text-white shadow-lg"
+                        style={{
+                          background: isRevealed
+                            ? `linear-gradient(135deg, ${reason.color} 0%, ${reason.color}dd 100%)`
+                            : '#e5e7eb'
+                        }}
+                      >
+                        {reason.id}
+                      </div>
+
+                      {/* Content */}
+                      <div className="flex-1 min-w-0">
+                        {isRevealed ? (
+                          <>
+                            <p className="text-gray-800 font-semibold leading-snug break-words">
+                              {reason.text}
+                            </p>
+                            <span
+                              className="inline-block mt-2 px-3 py-1 rounded-full text-xs font-bold text-white"
+                              style={{ backgroundColor: reason.color }}
+                            >
+                              {reason.category}
+                            </span>
+                          </>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <span className="text-gray-400 text-sm italic">
+                              🎈 Tap balloon to reveal...
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                )
+              })}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Reason Card Modal */}
       <AnimatePresence>
@@ -568,7 +734,6 @@ const Page4_26Reasons = ({ onComplete }) => {
               animate={{ scale: 1 }}
               transition={{ type: 'spring', duration: 1 }}
             >
-              {/* Giant heart */}
               <motion.div
                 className="text-9xl mb-8"
                 animate={{
@@ -584,7 +749,6 @@ const Page4_26Reasons = ({ onComplete }) => {
                 ❤️
               </motion.div>
 
-              {/* Message */}
               <motion.h1
                 className="text-5xl md:text-7xl font-bold text-white mb-6 drop-shadow-lg"
                 initial={{ opacity: 0, y: 30 }}
@@ -603,7 +767,6 @@ const Page4_26Reasons = ({ onComplete }) => {
                 And infinity more reasons to come...
               </motion.p>
 
-              {/* Continue Button */}
               <motion.button
                 onClick={onComplete}
                 className="px-12 py-6 bg-white text-purple-600 rounded-full text-2xl font-bold shadow-2xl hover:shadow-3xl transition-all"
