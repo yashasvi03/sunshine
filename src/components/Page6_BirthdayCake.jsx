@@ -158,66 +158,264 @@ const Page6_BirthdayCake = ({ onComplete }) => {
   const allCandlePositions = [...topTierPositions, ...bottomTierPositions]
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-b from-[#2C0735] to-[#1a0033] flex flex-col items-center justify-center p-6">
-      {/* Instructions */}
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-b from-[#1a0033] via-[#2C0735] to-[#3d1450] flex flex-col items-center justify-center p-6">
+      {/* Animated Background Stars */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {Array.from({ length: 50 }).map((_, i) => (
+          <motion.div
+            key={`star-${i}`}
+            className="absolute rounded-full"
+            style={{
+              width: `${Math.random() * 3 + 1}px`,
+              height: `${Math.random() * 3 + 1}px`,
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              backgroundColor: i % 3 === 0 ? '#FFD700' : '#FFF',
+              boxShadow: `0 0 ${Math.random() * 10 + 5}px ${i % 3 === 0 ? '#FFD700' : '#FFF'}`
+            }}
+            animate={{
+              opacity: [0.2, 1, 0.2],
+              scale: [1, 1.5, 1]
+            }}
+            transition={{
+              duration: 3 + Math.random() * 2,
+              delay: i * 0.1,
+              repeat: Infinity
+            }}
+          />
+        ))}
+
+        {/* Floating sparkles */}
+        {Array.from({ length: 15 }).map((_, i) => (
+          <motion.div
+            key={`sparkle-${i}`}
+            className="absolute text-2xl"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              y: [0, -30, 0],
+              scale: [0, 1.5, 0],
+              rotate: [0, 180, 360],
+              opacity: [0, 1, 0]
+            }}
+            transition={{
+              duration: 4,
+              delay: i * 0.5,
+              repeat: Infinity,
+              repeatDelay: 2
+            }}
+          >
+            ✨
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Decorative glow blobs */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-600 rounded-full blur-[150px] opacity-20 animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-pink-600 rounded-full blur-[130px] opacity-20 animate-pulse" style={{ animationDelay: '1.5s' }} />
+      </div>
+
+      {/* Enhanced Instructions */}
       {showInstructions && litCount > 0 && (
         <motion.div
-          className="absolute top-12 left-0 right-0 text-center z-20"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
+          className="absolute top-8 md:top-12 left-0 right-0 text-center z-20 px-4"
+          initial={{ opacity: 0, y: -30, scale: 0.9 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ type: 'spring', damping: 15 }}
         >
-          <h2 className="text-4xl md:text-5xl font-display text-gold mb-4">
-            Close your eyes
-          </h2>
-          <p className="text-2xl md:text-3xl text-white mb-2">Make a wish</p>
-          <p className="text-xl md:text-2xl text-white mb-6">And blow! 🎂</p>
-          <p className="text-lg text-gray-400">
-            {micPermission === 'granted'
-              ? '🎤 Blow into your microphone'
-              : 'Tap candles to blow them out'}
-          </p>
+          <motion.div
+            className="inline-block bg-gradient-to-r from-purple-900/80 to-pink-900/80 backdrop-blur-lg rounded-3xl px-8 py-6 shadow-2xl border-2 border-gold/30"
+            animate={{
+              boxShadow: [
+                '0 10px 40px rgba(255,215,0,0.3)',
+                '0 15px 50px rgba(255,215,0,0.5)',
+                '0 10px 40px rgba(255,215,0,0.3)'
+              ]
+            }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            <motion.h2
+              className="text-3xl md:text-5xl font-bold text-transparent bg-gradient-to-r from-gold to-amber-300 bg-clip-text mb-4"
+              animate={{
+                scale: [1, 1.05, 1]
+              }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              Close your eyes ✨
+            </motion.h2>
+            <motion.p
+              className="text-xl md:text-3xl text-white mb-2 font-semibold"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              Make a wish 💫
+            </motion.p>
+            <motion.p
+              className="text-lg md:text-2xl text-pink-200 mb-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              And blow! 🎂
+            </motion.p>
+            <motion.div
+              className="inline-flex items-center gap-2 px-6 py-2 bg-white/20 rounded-full text-sm md:text-base text-gold font-semibold"
+              animate={{
+                scale: [1, 1.05, 1]
+              }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            >
+              {micPermission === 'granted' ? (
+                <>
+                  <motion.span
+                    animate={{ scale: [1, 1.3, 1] }}
+                    transition={{ duration: 1, repeat: Infinity }}
+                  >
+                    🎤
+                  </motion.span>
+                  Blow into your microphone
+                </>
+              ) : (
+                <>
+                  <motion.span
+                    animate={{ rotate: [0, 10, -10, 0] }}
+                    transition={{ duration: 1, repeat: Infinity }}
+                  >
+                    👆
+                  </motion.span>
+                  Tap candles to blow them out
+                </>
+              )}
+            </motion.div>
+          </motion.div>
         </motion.div>
       )}
 
       {/* Cake Container */}
-      <div className="relative" style={{ width: '400px', height: '500px', perspective: '1000px' }}>
+      <motion.div
+        className="relative z-10"
+        style={{ width: '400px', height: '500px', perspective: '1000px' }}
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 1, type: 'spring' }}
+      >
+        {/* Decorative sparkles around cake */}
+        {Array.from({ length: 8 }).map((_, i) => {
+          const angle = (i / 8) * 360
+          const radius = 180
+          return (
+            <motion.div
+              key={`cake-sparkle-${i}`}
+              className="absolute text-3xl"
+              style={{
+                left: `${50 + radius * Math.cos((angle * Math.PI) / 180)}px`,
+                top: `${250 + radius * Math.sin((angle * Math.PI) / 180)}px`,
+                transform: 'translate(-50%, -50%)'
+              }}
+              animate={{
+                scale: [0, 1.5, 0],
+                rotate: [0, 180, 360],
+                opacity: [0, 1, 0]
+              }}
+              transition={{
+                duration: 3,
+                delay: i * 0.3,
+                repeat: Infinity,
+                repeatDelay: 1
+              }}
+            >
+              ✨
+            </motion.div>
+          )
+        })}
+
         {/* Bottom Tier */}
         <motion.div
-          className="absolute bottom-20 left-1/2 transform -translate-x-1/2"
+          className="absolute bottom-20 left-1/2 transform -translate-x-1/2 overflow-visible"
           style={{
             width: '300px',
             height: '120px',
-            background: 'linear-gradient(to bottom, #FFC0CB 0%, #FFB6C1 100%)',
-            borderRadius: '15px',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
-            border: '3px solid #FFE4E1'
+            borderRadius: '15px'
           }}
-          animate={
-            litCount === 0
-              ? {
-                  boxShadow: [
-                    '0 20px 40px rgba(255,215,0,0.3)',
-                    '0 20px 60px rgba(255,215,0,0.6)',
-                    '0 20px 40px rgba(255,215,0,0.3)'
-                  ]
-                }
-              : {}
-          }
-          transition={litCount === 0 ? { duration: 2, repeat: Infinity } : {}}
+          initial={{ y: 100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.3, type: 'spring' }}
         >
-          {/* Frosting Details */}
-          <div className="absolute top-0 left-0 right-0 h-8 bg-white opacity-30 rounded-t-lg" />
+          {/* Main cake layer */}
+          <div
+            className="absolute inset-0 rounded-2xl"
+            style={{
+              background: 'linear-gradient(135deg, #FF69B4 0%, #FF1493 50%, #C71585 100%)',
+              boxShadow: litCount === 0
+                ? '0 20px 60px rgba(255,215,0,0.6), 0 0 80px rgba(255,215,0,0.4), inset 0 -5px 20px rgba(0,0,0,0.2)'
+                : '0 20px 40px rgba(0,0,0,0.4), inset 0 -5px 20px rgba(0,0,0,0.2)',
+              border: '4px solid #FFE4E1'
+            }}
+          >
+            {/* Glow animation when all candles out */}
+            {litCount === 0 && (
+              <motion.div
+                className="absolute inset-0 rounded-2xl"
+                style={{
+                  background: 'radial-gradient(circle, rgba(255,215,0,0.4) 0%, transparent 70%)'
+                }}
+                animate={{
+                  scale: [1, 1.1, 1],
+                  opacity: [0.5, 0.8, 0.5]
+                }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
+            )}
+          </div>
+
+          {/* Frosting wave on top */}
+          <div className="absolute top-0 left-0 right-0 h-10 bg-gradient-to-b from-white/40 to-transparent rounded-t-2xl" />
+
+          {/* Decorative frosting drops */}
           {Array.from({ length: 12 }).map((_, i) => (
-            <div
+            <motion.div
               key={i}
-              className="absolute bottom-0 bg-white opacity-20"
+              className="absolute bottom-0"
               style={{
                 left: `${(i / 12) * 100}%`,
-                width: '20px',
-                height: '15px',
-                borderRadius: '10px 10px 0 0'
+                width: '24px',
+                height: '18px',
+                borderRadius: '12px 12px 0 0',
+                background: 'linear-gradient(to bottom, rgba(255,255,255,0.4), rgba(255,255,255,0.2))',
+                boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.3)'
               }}
+              initial={{ scaleY: 0, originY: 1 }}
+              animate={{ scaleY: 1 }}
+              transition={{ delay: 0.5 + i * 0.05 }}
             />
+          ))}
+
+          {/* Decorative hearts on cake */}
+          {[...Array(6)].map((_, i) => (
+            <motion.div
+              key={`heart-${i}`}
+              className="absolute text-2xl"
+              style={{
+                left: `${15 + i * 14}%`,
+                top: '50%',
+                transform: 'translateY(-50%)'
+              }}
+              animate={{
+                scale: [1, 1.2, 1],
+                opacity: [0.6, 1, 0.6]
+              }}
+              transition={{
+                duration: 2,
+                delay: i * 0.2,
+                repeat: Infinity
+              }}
+            >
+              💕
+            </motion.div>
           ))}
         </motion.div>
 
@@ -227,25 +425,84 @@ const Page6_BirthdayCake = ({ onComplete }) => {
           style={{
             width: '180px',
             height: '80px',
-            background: 'linear-gradient(to bottom, #FFE4E1 0%, #FFC0CB 100%)',
-            borderRadius: '12px',
-            boxShadow: '0 15px 30px rgba(0,0,0,0.3)',
-            border: '3px solid #FFB6C1'
+            borderRadius: '12px'
           }}
+          initial={{ y: -100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.5, type: 'spring' }}
         >
-          {/* Frosting Details */}
-          <div className="absolute top-0 left-0 right-0 h-6 bg-white opacity-30 rounded-t-lg" />
+          {/* Main cake layer */}
+          <div
+            className="absolute inset-0 rounded-xl"
+            style={{
+              background: 'linear-gradient(135deg, #FFB6D9 0%, #FF69B4 50%, #FF1493 100%)',
+              boxShadow: litCount === 0
+                ? '0 15px 40px rgba(255,215,0,0.5), 0 0 60px rgba(255,215,0,0.3), inset 0 -4px 15px rgba(0,0,0,0.2)'
+                : '0 15px 30px rgba(0,0,0,0.4), inset 0 -4px 15px rgba(0,0,0,0.2)',
+              border: '3px solid #FFE4E1'
+            }}
+          >
+            {/* Glow animation */}
+            {litCount === 0 && (
+              <motion.div
+                className="absolute inset-0 rounded-xl"
+                style={{
+                  background: 'radial-gradient(circle, rgba(255,215,0,0.4) 0%, transparent 70%)'
+                }}
+                animate={{
+                  scale: [1, 1.15, 1],
+                  opacity: [0.5, 0.9, 0.5]
+                }}
+                transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+              />
+            )}
+          </div>
+
+          {/* Frosting wave */}
+          <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-white/40 to-transparent rounded-t-xl" />
+
+          {/* Decorative frosting drops */}
           {Array.from({ length: 8 }).map((_, i) => (
-            <div
+            <motion.div
               key={i}
-              className="absolute bottom-0 bg-white opacity-20"
+              className="absolute bottom-0"
               style={{
                 left: `${(i / 8) * 100}%`,
-                width: '15px',
-                height: '12px',
-                borderRadius: '8px 8px 0 0'
+                width: '20px',
+                height: '14px',
+                borderRadius: '10px 10px 0 0',
+                background: 'linear-gradient(to bottom, rgba(255,255,255,0.4), rgba(255,255,255,0.2))',
+                boxShadow: 'inset 0 2px 3px rgba(255,255,255,0.3)'
               }}
+              initial={{ scaleY: 0, originY: 1 }}
+              animate={{ scaleY: 1 }}
+              transition={{ delay: 0.7 + i * 0.05 }}
             />
+          ))}
+
+          {/* Decorative stars */}
+          {[...Array(4)].map((_, i) => (
+            <motion.div
+              key={`star-${i}`}
+              className="absolute text-lg"
+              style={{
+                left: `${20 + i * 20}%`,
+                top: '50%',
+                transform: 'translateY(-50%)'
+              }}
+              animate={{
+                scale: [1, 1.3, 1],
+                rotate: [0, 180, 360],
+                opacity: [0.7, 1, 0.7]
+              }}
+              transition={{
+                duration: 2.5,
+                delay: i * 0.3,
+                repeat: Infinity
+              }}
+            >
+              ⭐
+            </motion.div>
           ))}
         </motion.div>
 
@@ -253,125 +510,389 @@ const Page6_BirthdayCake = ({ onComplete }) => {
         {allCandlePositions.map((pos, index) => (
           <motion.div
             key={index}
-            className="absolute cursor-pointer"
+            className="absolute cursor-pointer z-20"
             style={{
               left: `${pos.x}%`,
               top: `${pos.y}%`,
               transform: 'translate(-50%, -50%)'
             }}
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.8 + index * 0.02, type: 'spring' }}
             onClick={() => handleCandleClick(index)}
-            whileHover={{ scale: 1.1 }}
+            whileHover={{ scale: 1.2, y: -5 }}
+            whileTap={{ scale: 0.9 }}
           >
             <AnimatePresence>
               {candlesLit[index] && (
                 <motion.div
                   initial={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0 }}
-                  transition={{ duration: 0.3 }}
+                  exit={{
+                    opacity: 0,
+                    scale: 0,
+                    y: -20,
+                    transition: { duration: 0.4 }
+                  }}
                 >
-                  {/* Candle Stick */}
+                  {/* Candle Stick with gradient and stripes */}
                   <div
-                    className="bg-gradient-to-b from-yellow-100 to-yellow-200 rounded-sm mx-auto"
+                    className="relative mx-auto rounded-sm overflow-hidden"
                     style={{
-                      width: '8px',
-                      height: '35px',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                      width: '10px',
+                      height: '40px',
+                      background: 'linear-gradient(135deg, #FFE5B4 0%, #FFD700 50%, #FFA500 100%)',
+                      boxShadow: '0 3px 8px rgba(0,0,0,0.3), inset 0 1px 2px rgba(255,255,255,0.5)'
                     }}
-                  />
+                  >
+                    {/* Spiral stripe effect */}
+                    <div
+                      className="absolute inset-0 opacity-20"
+                      style={{
+                        background: 'repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(255,255,255,0.5) 3px, rgba(255,255,255,0.5) 6px)'
+                      }}
+                    />
+                    {/* Candle wick */}
+                    <div
+                      className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-0.5 h-2 bg-gray-800"
+                    />
+                  </div>
 
-                  {/* Flame */}
+                  {/* Enhanced Flame */}
                   <motion.div
-                    className="relative -mt-2 mx-auto"
+                    className="relative -mt-3 mx-auto"
                     animate={{
-                      scale: [1, 1.1, 0.9, 1.05, 1],
-                      y: [0, -1, 1, -0.5, 0]
+                      scale: [1, 1.15, 0.95, 1.1, 1],
+                      y: [0, -2, 1, -1, 0],
+                      rotate: [0, -3, 3, -2, 0]
                     }}
                     transition={{
-                      duration: 0.8,
+                      duration: 1 + Math.random() * 0.5,
                       repeat: Infinity,
                       ease: "easeInOut"
                     }}
-                    style={{ width: '12px', height: '20px' }}
+                    style={{ width: '16px', height: '24px' }}
                   >
+                    {/* Outer glow */}
+                    <div
+                      className="absolute -inset-4 rounded-full opacity-40"
+                      style={{
+                        background: 'radial-gradient(circle, #ff9800 0%, transparent 70%)',
+                        filter: 'blur(8px)'
+                      }}
+                    />
                     {/* Outer flame */}
                     <div
-                      className="absolute inset-0 rounded-full"
+                      className="absolute inset-0"
                       style={{
-                        background: 'radial-gradient(circle, #ffeb3b 0%, #ff9800 40%, #ff5722 100%)',
-                        filter: 'blur(2px)'
+                        background: 'radial-gradient(ellipse 50% 70% at 50% 60%, #ffeb3b 0%, #ff9800 35%, #ff5722 70%, #d32f2f 100%)',
+                        filter: 'blur(1px)',
+                        borderRadius: '50% 50% 20% 20%'
                       }}
                     />
-                    {/* Inner flame */}
+                    {/* Middle flame */}
                     <div
-                      className="absolute inset-1 rounded-full"
+                      className="absolute inset-1"
                       style={{
-                        background: 'radial-gradient(circle, #fff59d 0%, #ffeb3b 70%)',
-                        filter: 'blur(1px)'
+                        background: 'radial-gradient(ellipse at 50% 50%, #fff59d 0%, #ffeb3b 60%, #ff9800 100%)',
+                        filter: 'blur(0.5px)',
+                        borderRadius: '50% 50% 30% 30%'
                       }}
                     />
-                    {/* Glow */}
+                    {/* Inner bright core */}
                     <div
-                      className="absolute -inset-2 rounded-full opacity-50"
+                      className="absolute inset-2"
                       style={{
-                        background: 'radial-gradient(circle, #ffeb3b 0%, transparent 70%)'
+                        background: 'radial-gradient(circle, #ffffff 0%, #fff59d 50%, transparent 100%)',
+                        borderRadius: '50%'
                       }}
                     />
                   </motion.div>
+
+                  {/* Candle light glow on cake */}
+                  <div
+                    className="absolute top-12 left-1/2 transform -translate-x-1/2 pointer-events-none"
+                    style={{
+                      width: '40px',
+                      height: '40px',
+                      background: 'radial-gradient(circle, rgba(255,235,59,0.3) 0%, transparent 70%)',
+                      filter: 'blur(8px)'
+                    }}
+                  />
                 </motion.div>
               )}
             </AnimatePresence>
           </motion.div>
         ))}
 
-        {/* Candles Left Counter */}
+        {/* Enhanced Candles Left Counter */}
         {litCount > 0 && litCount < 26 && (
           <motion.div
-            className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 text-gold text-xl font-bold"
+            className="absolute -bottom-12 md:-bottom-16 left-1/2 transform -translate-x-1/2"
             key={litCount}
-            animate={{ scale: [1, 1.3, 1] }}
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0, opacity: 0 }}
           >
-            {litCount} candles left
+            <motion.div
+              className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-gold/90 to-amber-400/90 backdrop-blur-md rounded-full shadow-2xl border-2 border-white/30"
+              animate={{
+                scale: [1, 1.1, 1],
+                boxShadow: [
+                  '0 5px 20px rgba(255,215,0,0.5)',
+                  '0 8px 30px rgba(255,215,0,0.8)',
+                  '0 5px 20px rgba(255,215,0,0.5)'
+                ]
+              }}
+              transition={{ duration: 1, repeat: Infinity }}
+            >
+              <motion.span
+                className="text-2xl"
+                animate={{
+                  rotate: [0, 10, -10, 0]
+                }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                🕯️
+              </motion.span>
+              <span className="text-xl md:text-2xl font-bold text-purple-900">
+                {litCount} {litCount === 1 ? 'candle' : 'candles'} left
+              </span>
+            </motion.div>
           </motion.div>
         )}
-      </div>
+      </motion.div>
 
-      {/* Celebration Message */}
+      {/* Enhanced Celebration Message */}
       <AnimatePresence>
         {showMessage && (
           <motion.div
-            className="absolute inset-0 bg-gradient-to-b from-[#2C0735] to-[#1a0033] flex flex-col items-center justify-center z-30 p-6"
+            className="absolute inset-0 bg-gradient-to-br from-[#1a0033] via-[#2C0735] to-[#3d1450] flex flex-col items-center justify-center z-30 p-6 overflow-hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
           >
-            <motion.h1
-              className="text-4xl md:text-6xl font-display text-gold text-center mb-6"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              May all your wishes come true
-            </motion.h1>
+            {/* Celebration confetti particles */}
+            <div className="absolute inset-0 pointer-events-none">
+              {Array.from({ length: 30 }).map((_, i) => (
+                <motion.div
+                  key={`confetti-${i}`}
+                  className="absolute text-3xl"
+                  style={{
+                    left: `${Math.random() * 100}%`,
+                    top: '-10%',
+                  }}
+                  animate={{
+                    y: ['0vh', '110vh'],
+                    x: [0, (Math.random() - 0.5) * 200],
+                    rotate: [0, 360 * (Math.random() > 0.5 ? 1 : -1)],
+                    opacity: [1, 1, 0]
+                  }}
+                  transition={{
+                    duration: 4 + Math.random() * 2,
+                    delay: i * 0.1,
+                    repeat: Infinity,
+                    ease: 'linear'
+                  }}
+                >
+                  {['🎉', '🎊', '✨', '💖', '⭐', '🌟'][i % 6]}
+                </motion.div>
+              ))}
+            </div>
 
-            <motion.p
-              className="text-2xl md:text-3xl text-rose-gold text-center mb-12"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8 }}
-            >
-              Starting with mine - another year with you ❤️
-            </motion.p>
+            {/* Decorative glow */}
+            <motion.div
+              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-gold/20 to-transparent rounded-full blur-3xl"
+              animate={{
+                scale: [1, 1.3, 1],
+                opacity: [0.3, 0.6, 0.3]
+              }}
+              transition={{ duration: 3, repeat: Infinity }}
+            />
 
-            <motion.button
-              onClick={onComplete}
-              className="px-10 py-5 bg-gold text-[#1a0033] rounded-full text-xl font-bold shadow-2xl hover:bg-yellow-400 transition-colors"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 1.3 }}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Continue
-            </motion.button>
+            {/* Floating hearts */}
+            {Array.from({ length: 8 }).map((_, i) => {
+              const angle = (i / 8) * 360
+              const radius = 200
+              return (
+                <motion.div
+                  key={`heart-${i}`}
+                  className="absolute text-4xl"
+                  style={{
+                    left: '50%',
+                    top: '50%'
+                  }}
+                  animate={{
+                    rotate: [angle, angle + 360],
+                  }}
+                  transition={{
+                    duration: 20,
+                    repeat: Infinity,
+                    ease: 'linear'
+                  }}
+                >
+                  <div
+                    style={{
+                      transform: `rotate(${-angle}deg) translateX(${radius}px)`
+                    }}
+                  >
+                    <motion.span
+                      animate={{
+                        scale: [1, 1.3, 1],
+                        opacity: [0.5, 1, 0.5]
+                      }}
+                      transition={{
+                        duration: 2,
+                        delay: i * 0.2,
+                        repeat: Infinity
+                      }}
+                    >
+                      💕
+                    </motion.span>
+                  </div>
+                </motion.div>
+              )
+            })}
+
+            <div className="relative z-10 max-w-4xl">
+              {/* Main message */}
+              <motion.div
+                className="mb-8"
+                initial={{ opacity: 0, y: 50, scale: 0.8 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ delay: 0.3, type: 'spring', damping: 15 }}
+              >
+                {/* Decorative stars */}
+                <div className="flex justify-center gap-4 mb-6">
+                  {[...Array(5)].map((_, i) => (
+                    <motion.span
+                      key={i}
+                      className="text-4xl md:text-5xl"
+                      animate={{
+                        y: [0, -15, 0],
+                        rotate: [0, 180, 360],
+                        scale: [1, 1.3, 1]
+                      }}
+                      transition={{
+                        duration: 2.5,
+                        delay: i * 0.2,
+                        repeat: Infinity
+                      }}
+                    >
+                      ⭐
+                    </motion.span>
+                  ))}
+                </div>
+
+                <motion.h1
+                  className="text-3xl md:text-5xl lg:text-6xl font-bold text-center mb-3 leading-tight px-4"
+                  style={{
+                    background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FFD700 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundSize: '200% auto'
+                  }}
+                  animate={{
+                    backgroundPosition: ['0% center', '200% center']
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: 'linear'
+                  }}
+                >
+                  May all your wishes come true ✨
+                </motion.h1>
+              </motion.div>
+
+              {/* Subtitle message */}
+              <motion.div
+                className="mb-12"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8, type: 'spring' }}
+              >
+                {/* Decorative hearts */}
+                <div className="flex justify-center gap-2 mb-4">
+                  {[...Array(7)].map((_, i) => (
+                    <motion.span
+                      key={i}
+                      className="text-2xl md:text-3xl"
+                      animate={{
+                        y: [0, -10, 0],
+                        scale: [1, 1.2, 1]
+                      }}
+                      transition={{
+                        duration: 2,
+                        delay: 0.8 + i * 0.15,
+                        repeat: Infinity
+                      }}
+                    >
+                      💖
+                    </motion.span>
+                  ))}
+                </div>
+
+                <p className="text-xl md:text-3xl lg:text-4xl text-transparent bg-gradient-to-r from-pink-300 via-rose-300 to-pink-300 bg-clip-text text-center mb-4 font-bold leading-relaxed px-4">
+                  Starting with mine
+                </p>
+                <p className="text-2xl md:text-4xl lg:text-5xl text-white text-center font-bold px-4">
+                  Another year with you ❤️
+                </p>
+              </motion.div>
+
+              {/* Continue button */}
+              <motion.div
+                className="text-center"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 1.3, type: 'spring' }}
+              >
+                <motion.button
+                  onClick={onComplete}
+                  className="relative px-12 py-6 bg-gradient-to-r from-gold via-amber-400 to-gold rounded-full text-xl md:text-2xl font-bold shadow-2xl overflow-hidden group"
+                  style={{
+                    color: '#1a0033',
+                    backgroundSize: '200% auto'
+                  }}
+                  whileHover={{
+                    scale: 1.1,
+                    boxShadow: '0 20px 40px rgba(255,215,0,0.6)',
+                    backgroundPosition: 'right center'
+                  }}
+                  whileTap={{ scale: 0.95 }}
+                  animate={{
+                    boxShadow: [
+                      '0 10px 30px rgba(255,215,0,0.4)',
+                      '0 15px 40px rgba(255,215,0,0.6)',
+                      '0 10px 30px rgba(255,215,0,0.4)'
+                    ]
+                  }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  {/* Shine effect */}
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/40 to-white/0"
+                    animate={{
+                      x: ['-100%', '200%']
+                    }}
+                    transition={{
+                      duration: 2.5,
+                      repeat: Infinity,
+                      ease: 'linear'
+                    }}
+                  />
+                  <span className="relative flex items-center justify-center gap-3">
+                    Continue to Your Gift
+                    <motion.span
+                      animate={{ x: [0, 5, 0] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                    >
+                      →
+                    </motion.span>
+                  </span>
+                </motion.button>
+              </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
