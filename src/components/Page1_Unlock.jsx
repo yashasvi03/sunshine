@@ -64,7 +64,7 @@ const Page1_Unlock = () => {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-b from-deep-purple via-[#1a1a3e] to-navy-blue flex items-center justify-center">
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-b from-deep-purple via-[#1a1a3e] to-navy-blue flex items-center justify-center pt-16">
       <Navigation />
       {/* Enhanced Twinkling Stars Background */}
       <div className="absolute inset-0">

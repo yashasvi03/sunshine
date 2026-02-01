@@ -14,15 +14,25 @@ const Page7_GiftReveal = () => {
   const [showFinalMessage, setShowFinalMessage] = useState(false)
 
   const handleUnwrap = () => {
-    if (unwrapStage < 4) {
-      setUnwrapStage(prev => prev + 1)
+    // Single click triggers entire unwrapping sequence
+    if (unwrapStage === 0) {
+      // Stage 1: Ribbon shakes immediately
+      setUnwrapStage(1)
 
-      if (unwrapStage === 3) {
-        // Box opening - show golden light and transition to video
-        setTimeout(() => {
-          setUnwrapStage(4)
-        }, 1500)
-      }
+      // Stage 2: Ribbon flies off after 800ms
+      setTimeout(() => {
+        setUnwrapStage(2)
+      }, 800)
+
+      // Stage 3: Paper tears away with golden glow after 1600ms
+      setTimeout(() => {
+        setUnwrapStage(3)
+      }, 1600)
+
+      // Stage 4: Transition to video after golden animation (3100ms total)
+      setTimeout(() => {
+        setUnwrapStage(4)
+      }, 3100)
     }
   }
 
@@ -121,7 +131,7 @@ const Page7_GiftReveal = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#FFF5F7] via-[#FFE4EC] to-[#FFD6E8] relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-[#FFF5F7] via-[#FFE4EC] to-[#FFD6E8] relative overflow-hidden pt-16">
       <Navigation />
       {/* Animated Background */}
       <div className="absolute inset-0 pointer-events-none">
@@ -532,7 +542,7 @@ const Page7_GiftReveal = () => {
                 transition={{ duration: 2, repeat: Infinity }}
               >
                 {unwrapStage === 0 && "✨ Tap to unwrap your gift ✨"}
-                {unwrapStage === 1 && "🎁 Keep tapping! 🎁"}
+                {unwrapStage === 1 && "🎁 Unwrapping... 🎁"}
                 {unwrapStage === 2 && "💖 Almost there... 💖"}
                 {unwrapStage === 3 && "🌟 Opening... 🌟"}
               </motion.p>
@@ -715,15 +725,6 @@ const Page7_GiftReveal = () => {
                 )
               })}
             </motion.div>
-
-            <motion.p
-              className="text-white/80 mt-8 text-center text-sm md:text-base bg-black/30 backdrop-blur-sm px-6 py-3 rounded-full border border-white/20 relative z-10"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1 }}
-            >
-              📹 Place your video at: <code className="bg-white/10 px-2 py-1 rounded text-gold font-mono">public/videos/birthday-message.mp4</code>
-            </motion.p>
           </motion.div>
         )}
 

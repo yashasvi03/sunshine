@@ -67,7 +67,7 @@ const Page2_BirthdayFacts = () => {
   const currentFact = facts[currentFactIndex]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#FFF5F7] via-[#FFE5EC] to-[#FFD6E8] flex flex-col items-center justify-center p-6 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-[#FFF5F7] via-[#FFE5EC] to-[#FFD6E8] flex flex-col items-center justify-center p-6 relative overflow-hidden pt-16">
       <Navigation />
       {/* Floating hearts background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">

@@ -2,7 +2,7 @@
 
 export const giftInfo = {
   // Choose gift type: "experience", "trip", "physical", "coupon_book"
-  type: "experience",
+  type: "physical",
 
   // For EXPERIENCE type (dinner, show, event):
   experience: {
@@ -35,7 +35,7 @@ export const giftInfo = {
     title: "Your Real Gift Awaits...",
     icon: "🎁",
     location: "Check under your pillow",
-    hint: "It's something you mentioned wanting last month",
+    hint: "It's something you love way too much (besides me, of course!)",
     additionalMessage: "(or wherever I hid it 😉)"
   },
 

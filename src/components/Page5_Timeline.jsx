@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import confetti from 'canvas-confetti'
@@ -40,8 +40,20 @@ const Page5_Timeline = () => {
     setFullscreenImage(null)
   }
 
+  // ESC key handler for closing fullscreen
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape' && fullscreenImage) {
+        closeFullscreen()
+      }
+    }
+
+    window.addEventListener('keydown', handleEscape)
+    return () => window.removeEventListener('keydown', handleEscape)
+  }, [fullscreenImage])
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#FFF8F0] via-[#FFE4D6] to-[#FFD6C8] overflow-x-auto md:overflow-y-hidden relative">
+    <div className="min-h-screen bg-gradient-to-br from-[#FFF8F0] via-[#FFE4D6] to-[#FFD6C8] overflow-x-auto md:overflow-y-hidden relative pt-16">
       <Navigation />
       {/* Animated Background Elements */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -104,8 +116,38 @@ const Page5_Timeline = () => {
         <div className="absolute top-1/2 left-1/3 w-72 h-72 bg-orange-200 rounded-full blur-[110px] opacity-20 animate-pulse" style={{ animationDelay: '3s' }} />
       </div>
       {/* Desktop: Horizontal Timeline */}
-      <div className="hidden md:flex items-center min-h-screen px-12 py-12 relative z-10">
-        <div className="flex items-center space-x-32 min-w-max">
+      <div className="hidden md:flex items-center min-h-screen px-12 py-12 relative z-10 overflow-x-auto">
+        <div className="flex items-center space-x-24 min-w-max relative pr-12">
+          {/* Timeline Line - spans full content width */}
+          <div className="absolute left-0 right-0 top-1/2 transform -translate-y-1/2" style={{ zIndex: -1 }}>
+            {/* Base line */}
+            <div className="h-2 bg-gradient-to-r from-rose-300 via-pink-300 to-rose-300 rounded-full opacity-50" />
+
+            {/* Animated progress line */}
+            <motion.div
+              className="absolute top-0 left-0 h-2 bg-gradient-to-r from-rose-500 via-pink-500 to-purple-500 rounded-full"
+              initial={{ width: '0%' }}
+              animate={{ width: '100%' }}
+              transition={{ duration: 2, delay: 0.5, ease: 'easeInOut' }}
+            />
+
+            {/* Glowing orb moving along timeline */}
+            <motion.div
+              className="absolute top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gold rounded-full"
+              style={{
+                boxShadow: '0 0 20px rgba(255,215,0,0.8), 0 0 40px rgba(255,215,0,0.5)'
+              }}
+              animate={{
+                left: ['0%', '100%']
+              }}
+              transition={{
+                duration: 12,
+                repeat: Infinity,
+                ease: 'linear'
+              }}
+            />
+          </div>
+
           {timelineData.map((moment, index) => (
             <div key={moment.id} className="flex flex-col items-center">
               {/* Polaroid Photo */}
@@ -141,7 +183,7 @@ const Page5_Timeline = () => {
                   {moment.isFuture ? (
                     /* Future placeholder with animation */
                     <motion.div
-                      className="w-64 h-48 bg-gradient-to-br from-rose-400 via-pink-400 to-purple-400 flex flex-col items-center justify-center rounded-sm relative overflow-hidden"
+                      className="w-56 h-40 bg-gradient-to-br from-rose-400 via-pink-400 to-purple-400 flex flex-col items-center justify-center rounded-sm relative overflow-hidden"
                       animate={{
                         backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
                       }}
@@ -179,7 +221,7 @@ const Page5_Timeline = () => {
                         </motion.div>
                       ))}
                       <motion.span
-                        className="text-9xl text-white drop-shadow-2xl"
+                        className="text-7xl text-white drop-shadow-2xl"
                         animate={{
                           scale: [1, 1.2, 1],
                           rotate: [0, 10, -10, 0]
@@ -191,19 +233,15 @@ const Page5_Timeline = () => {
                       >
                         ?
                       </motion.span>
-                      <p className="text-white text-lg font-bold mt-4">Our Future ✨</p>
+                      <p className="text-white text-base font-bold mt-3">Our Future ✨</p>
                     </motion.div>
                   ) : (
                     /* Photo with placeholder */
-                    <div className="w-64 h-48 bg-gray-200 flex items-center justify-center rounded-sm relative overflow-hidden">
+                    <div className="w-56 h-40 bg-gray-200 flex items-center justify-center rounded-sm relative overflow-hidden">
                       <img
                         src={moment.image}
                         alt={moment.title}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                        onError={(e) => {
-                          e.target.style.display = 'none'
-                          e.target.parentElement.innerHTML = '<div class="text-gray-500 text-center p-4 text-sm">📸 Add photo:<br/><code class="text-xs">' + moment.image + '</code></div>'
-                        }}
                       />
                       {/* Overlay gradient on hover */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -304,23 +342,26 @@ const Page5_Timeline = () => {
 
               {/* Caption */}
               <motion.div
-                className="mt-8 text-center max-w-xs"
+                className="mt-8 text-center max-w-[14rem]"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.15 + 0.3 }}
               >
                 <motion.h3
-                  className="text-transparent bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text font-bold text-xl mb-2"
+                  className="text-transparent bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text font-bold text-xl mb-1"
                   whileHover={{ scale: 1.05 }}
                 >
-                  {moment.date}
+                  {moment.title}
                 </motion.h3>
-                <p className="text-gray-700 text-base leading-relaxed font-medium">
+                <p className="text-rose-600 font-semibold text-xs mb-2">
+                  {moment.date}
+                </p>
+                <p className="text-gray-700 text-sm leading-relaxed">
                   {moment.caption}
                 </p>
                 {/* Decorative underline */}
                 <motion.div
-                  className="mt-2 mx-auto w-16 h-1 bg-gradient-to-r from-transparent via-pink-400 to-transparent rounded-full"
+                  className="mt-2 mx-auto w-16 h-0.5 bg-gradient-to-r from-transparent via-pink-400 to-transparent rounded-full"
                   initial={{ scaleX: 0 }}
                   animate={{ scaleX: 1 }}
                   transition={{ delay: index * 0.15 + 0.5 }}
@@ -328,36 +369,6 @@ const Page5_Timeline = () => {
               </motion.div>
             </div>
           ))}
-        </div>
-
-        {/* Enhanced Timeline Line */}
-        <div className="absolute left-0 right-0 top-1/2 transform -translate-y-1/2 mx-12 -z-10">
-          {/* Base line */}
-          <div className="h-2 bg-gradient-to-r from-rose-300 via-pink-300 to-rose-300 rounded-full opacity-50" />
-
-          {/* Animated progress line */}
-          <motion.div
-            className="absolute top-0 left-0 h-2 bg-gradient-to-r from-rose-500 via-pink-500 to-purple-500 rounded-full"
-            initial={{ width: '0%' }}
-            animate={{ width: '100%' }}
-            transition={{ duration: 2, delay: 0.5, ease: 'easeInOut' }}
-          />
-
-          {/* Glowing orb moving along timeline */}
-          <motion.div
-            className="absolute top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gold rounded-full"
-            style={{
-              boxShadow: '0 0 20px rgba(255,215,0,0.8), 0 0 40px rgba(255,215,0,0.5)'
-            }}
-            animate={{
-              left: ['0%', '100%']
-            }}
-            transition={{
-              duration: 8,
-              repeat: Infinity,
-              ease: 'linear'
-            }}
-          />
         </div>
       </div>
 
@@ -532,10 +543,6 @@ const Page5_Timeline = () => {
                           src={moment.image}
                           alt={moment.title}
                           className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.target.style.display = 'none'
-                            e.target.parentElement.innerHTML = '<div class="text-gray-500 text-center p-3 text-xs">📸 Add photo:<br/><code class="text-[10px]">' + moment.image + '</code></div>'
-                          }}
                         />
                       </div>
                     )}
@@ -554,9 +561,12 @@ const Page5_Timeline = () => {
                   animate={{ opacity: 1 }}
                   transition={{ delay: index * 0.2 + 0.3 }}
                 >
-                  <h3 className="text-transparent bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text font-bold text-lg mb-1">
-                    {moment.date}
+                  <h3 className="text-transparent bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text font-bold text-xl mb-1">
+                    {moment.title}
                   </h3>
+                  <p className="text-rose-600 font-semibold text-sm mb-2">
+                    {moment.date}
+                  </p>
                   <p className="text-gray-700 text-base leading-relaxed">
                     {moment.caption}
                   </p>
@@ -567,7 +577,7 @@ const Page5_Timeline = () => {
         </div>
       </div>
 
-      {/* Enhanced Fullscreen Image Overlay */}
+      {/* Fullscreen Image Overlay */}
       <AnimatePresence>
         {fullscreenImage && (
           <motion.div
@@ -614,15 +624,24 @@ const Page5_Timeline = () => {
               {/* Close Button */}
               <motion.button
                 onClick={closeFullscreen}
-                className="absolute -top-10 md:-top-12 right-0 text-white text-4xl md:text-5xl font-light hover:text-gold transition-colors z-10"
-                whileHover={{ scale: 1.2, rotate: 90 }}
-                whileTap={{ scale: 0.9 }}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
+                className="absolute -top-12 md:-top-14 right-0 w-12 h-12 flex items-center justify-center bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-full border-2 border-white/50 text-white text-3xl font-light transition-colors z-10"
+                whileHover={{ scale: 1.15, rotate: 90 }}
+                whileTap={{ scale: 0.95 }}
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
               >
                 ×
               </motion.button>
+              {/* ESC hint */}
+              <motion.div
+                className="absolute -top-12 md:-top-14 left-0 text-white/70 text-sm"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                Press ESC to close
+              </motion.div>
 
               {/* Enlarged Polaroid-style Photo */}
               <motion.div
@@ -728,30 +747,6 @@ const Page5_Timeline = () => {
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Enhanced Instructions for adding photos */}
-      <motion.div
-        className="fixed bottom-4 right-4 bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl p-4 max-w-xs text-xs text-gray-700 z-20 border-2 border-pink-200"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1 }}
-        whileHover={{ scale: 1.05 }}
-      >
-        <p className="font-bold mb-2 text-pink-600 flex items-center gap-2">
-          <span className="text-lg">📸</span>
-          <span>To add your photos:</span>
-        </p>
-        <p className="mb-1">
-          Place images in <code className="bg-pink-100 px-2 py-0.5 rounded text-pink-700">public/images/</code>
-        </p>
-        <p className="text-gray-600">
-          Named: <span className="font-semibold">moment-1.jpg</span> through <span className="font-semibold">moment-8.jpg</span>
-        </p>
-        {/* Decorative element */}
-        <div className="absolute -top-2 -right-2 text-2xl animate-bounce">
-          ✨
-        </div>
-      </motion.div>
     </div>
   )
 }

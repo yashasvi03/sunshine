@@ -63,19 +63,19 @@ export const reasons = [
   {
     id: 11,
     category: "memories",
-    text: "That time you made me laugh until I cried",
+    text: "The times we laughed so hard that we cried",
     color: "#FFB6D9"
   },
   {
     id: 12,
     category: "memories",
-    text: "When you surprised me with the sweetest gesture",
+    text: "The way you always come up with the most thoughtful gifts for me",
     color: "#C9A0DC"
   },
   {
     id: 13,
     category: "memories",
-    text: "The day we went on that unforgettable adventure",
+    text: "The day we went to Wayanad, That's when I knew - I want every adventure to be with you",
     color: "#A8D8EA"
   },
   {
@@ -87,13 +87,13 @@ export const reasons = [
   {
     id: 15,
     category: "memories",
-    text: "That adventure to our favorite place",
+    text: "For planning those elegant reading dates to Cubbon, our favorite place",
     color: "#FFD1DC"
   },
   {
     id: 16,
     category: "memories",
-    text: "When you turned an ordinary day into something magical",
+    text: "For Living life together - waking up next to you, making chai together, arguing about what to watch.",
     color: "#D4A5A5"
   },
   {
@@ -105,19 +105,19 @@ export const reasons = [
   {
     id: 18,
     category: "memories",
-    text: "That moment when our inside joke was born",
+    text: " For being unapologetically yourself. No pretense, no filters (well, except in photos 😉). Just beautifully, perfectly you.",
     color: "#F0E2B6"
   },
   {
     id: 19,
     category: "little things",
-    text: "How you scrunch your nose when thinking",
+    text: "For all the airport goodbyes, which reminds me how lucky I am to have someone so hard to say goodbye to",
     color: "#FFC0CB"
   },
   {
     id: 20,
     category: "little things",
-    text: "Your morning routine that I absolutely adore",
+    text: "For making me your personal unpaid photographer, every day we're together",
     color: "#E0BBE4"
   },
   {
@@ -129,31 +129,31 @@ export const reasons = [
   {
     id: 22,
     category: "little things",
-    text: "Your collection of things that make you smile",
+    text: "The way you handled long distance with grace and love.",
     color: "#DFE6E9"
   },
   {
     id: 23,
     category: "little things",
-    text: "That outfit that suits you absolutely perfectly",
+    text: "For always looking incredible - be it casual kurtas or stunning nightclub outfits.",
     color: "#FAB1A0"
   },
   {
     id: 24,
     category: "future",
-    text: "Your passion for achieving your dreams",
+    text: "Your passion for achieving your dreams and motivating me to achieve mine",
     color: "#A29BFE"
   },
   {
     id: 25,
     category: "future",
-    text: "The future we're building together",
+    text: "From strangers to soulmates - writing a story we never want to end. Every chapter with you is my favorite.",
     color: "#FD79A8"
   },
   {
     id: 26,
     category: "future",
-    text: "Every day I get to wake up knowing you're in my life",
+    text: "26 years of you in this world. And however many days I've gotten to share it with you - have been the best. To a lifetime with you!",
     color: "#FFE4E1"
   }
 ];

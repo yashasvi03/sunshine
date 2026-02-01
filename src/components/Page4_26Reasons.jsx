@@ -12,7 +12,6 @@ const Page4_26Reasons = () => {
   const [activeReason, setActiveReason] = useState(null)
   const [allComplete, setAllComplete] = useState(false)
   const [showInstruction, setShowInstruction] = useState(true)
-  const [showList, setShowList] = useState(false)
   const [isPopping, setIsPopping] = useState(false)
 
   // Load popped balloons from localStorage on mount
@@ -24,13 +23,18 @@ const Page4_26Reasons = () => {
 
     // Hide instruction after 5 seconds
     setTimeout(() => setShowInstruction(false), 5000)
+
+    // Clear localStorage when component unmounts (user leaves page)
+    return () => {
+      localStorage.removeItem('poppedBalloons')
+    }
   }, [])
 
-  // Initialize balloons with random positions
+  // Initialize balloons with random positions (avoiding sidebar on right)
   useEffect(() => {
     const initialBalloons = reasons.map((reason, index) => ({
       ...reason,
-      x: 8 + (Math.random() * 84),
+      x: 8 + (Math.random() * 57), // Limit to 8-65% to avoid sidebar overlap
       y: 15 + (Math.random() * 70),
       size: index < 10 ? 100 : 85,
       bobSpeed: 3 + Math.random() * 2,
@@ -112,10 +116,9 @@ const Page4_26Reasons = () => {
       }, index * 100)
     })
 
-    // Show list after all are popped
+    // Stop popping animation
     setTimeout(() => {
       setIsPopping(false)
-      setShowList(true)
     }, unpoppedIds.length * 100 + 500)
   }
 
@@ -163,7 +166,7 @@ const Page4_26Reasons = () => {
   const getReasonById = (id) => reasons.find(r => r.id === id)
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#FFF0F5] via-[#FFE4F1] to-[#FFD6E8] flex">
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#FFF0F5] via-[#FFE4F1] to-[#FFD6E8] flex pt-16">
       <Navigation />
       {/* Animated sky background */}
       <div className="absolute inset-0 overflow-hidden">
@@ -243,11 +246,11 @@ const Page4_26Reasons = () => {
       <div className="flex-1 relative">
         {/* Header with controls */}
         <motion.div
-          className="relative z-20 pt-6 px-6"
+          className="relative z-20 pt-6 px-6 md:pr-[420px]"
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <div className="flex items-center justify-between max-w-6xl mx-auto flex-wrap gap-3">
+          <div className="flex items-center justify-start max-w-4xl flex-wrap gap-3">
             {/* Progress Counter */}
             <motion.div
               className="bg-white/90 backdrop-blur-md rounded-full px-6 py-3 shadow-xl border-2 border-pink-300"
@@ -278,26 +281,6 @@ const Page4_26Reasons = () => {
 
             {/* Action Buttons */}
             <div className="flex gap-2">
-              {/* Toggle List Button */}
-              {poppedBalloons.length > 0 && (
-                <motion.button
-                  onClick={() => setShowList(!showList)}
-                  className={`backdrop-blur-md rounded-full px-4 py-2 shadow-lg border transition-colors ${
-                    showList
-                      ? 'bg-purple-500 border-purple-600 text-white'
-                      : 'bg-white/90 border-gray-300 text-gray-700 hover:border-purple-400'
-                  }`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                >
-                  <span className="font-medium text-sm">
-                    {showList ? '🎈 Hide List' : '📝 Show List'}
-                  </span>
-                </motion.button>
-              )}
-
               {/* Pop All Button */}
               {poppedBalloons.length < 26 && (
                 <motion.button
@@ -474,27 +457,16 @@ const Page4_26Reasons = () => {
         </div>
       </div>
 
-      {/* Reasons List Sidebar */}
-      <AnimatePresence>
-        {showList && (
-          <motion.div
-            initial={{ x: 400, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: 400, opacity: 0 }}
-            transition={{ type: 'spring', damping: 25 }}
-            className="fixed right-0 top-0 bottom-0 w-full md:w-96 bg-white/95 backdrop-blur-lg shadow-2xl border-l-4 border-pink-400 z-40 overflow-hidden flex flex-col"
-          >
+      {/* Reasons List Sidebar - Always Visible */}
+      <motion.div
+        initial={{ x: 400, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ type: 'spring', damping: 25, delay: 0.5 }}
+        className="fixed right-0 top-16 bottom-0 w-full md:w-96 bg-white/95 backdrop-blur-lg shadow-2xl border-l-4 border-pink-400 z-40 overflow-hidden flex flex-col"
+      >
             {/* List Header */}
             <div className="bg-gradient-to-r from-pink-500 to-purple-500 p-6 text-white">
-              <div className="flex items-center justify-between mb-2">
-                <h2 className="text-2xl font-bold">26 Reasons</h2>
-                <button
-                  onClick={() => setShowList(false)}
-                  className="text-white/80 hover:text-white text-3xl leading-none"
-                >
-                  ×
-                </button>
-              </div>
+              <h2 className="text-2xl font-bold mb-2">26 Reasons I Love You</h2>
               <p className="text-white/90 text-sm">
                 {poppedBalloons.length} of 26 discovered
               </p>
@@ -558,8 +530,6 @@ const Page4_26Reasons = () => {
               })}
             </div>
           </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* Reason Card Modal */}
       <AnimatePresence>
@@ -763,13 +733,54 @@ const Page4_26Reasons = () => {
               </motion.h1>
 
               <motion.p
-                className="text-3xl md:text-4xl text-white/90 mb-12"
+                className="text-3xl md:text-4xl text-white/90 mb-8"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.8 }}
               >
                 And infinity more reasons to come...
               </motion.p>
+
+              {/* Scrollable list of all reasons */}
+              <motion.div
+                className="w-full max-w-4xl max-h-96 overflow-y-auto bg-white/20 backdrop-blur-md rounded-3xl p-6 mb-8 shadow-2xl"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1 }}
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {reasons.map((reason, index) => (
+                    <motion.div
+                      key={reason.id}
+                      className="bg-white/30 backdrop-blur-sm rounded-xl p-4 border-2 border-white/40"
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 1 + index * 0.03 }}
+                      whileHover={{ scale: 1.05 }}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div
+                          className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg"
+                          style={{ backgroundColor: reason.color }}
+                        >
+                          {reason.id}
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-white font-semibold text-lg leading-tight">
+                            {reason.text}
+                          </p>
+                          <span
+                            className="inline-block mt-2 px-3 py-1 rounded-full text-xs font-medium text-white"
+                            style={{ backgroundColor: reason.color }}
+                          >
+                            {reason.category}
+                          </span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
 
               <motion.button
                 onClick={() => navigate('/timeline')}

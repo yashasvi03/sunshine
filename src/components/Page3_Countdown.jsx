@@ -92,7 +92,7 @@ const Page3_Countdown = () => {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#FFF0F5] via-[#FFE4EC] to-[#FFD6E8] flex flex-col">
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#FFF0F5] via-[#FFE4EC] to-[#FFD6E8] flex flex-col pt-16">
       <Navigation />
       {/* Floating Particles */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">

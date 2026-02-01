@@ -18,12 +18,12 @@ const Navigation = () => {
 
   return (
     <motion.nav
-      className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md shadow-lg"
+      className="fixed top-0 left-0 right-0 z-[100] bg-white/90 backdrop-blur-md shadow-lg"
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="max-w-7xl mx-auto px-4 py-3">
+      <div className="max-w-7xl mx-auto px-4 py-2">
         <div className="flex items-center justify-between">
           <div className="text-lg font-bold text-transparent bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text">
             Birthday Adventure ✨
