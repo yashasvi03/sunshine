@@ -2,11 +2,13 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import confetti from 'canvas-confetti'
+import { useAudio } from '../context/AudioContext'
 import Navigation from './Navigation'
 import { timelineData } from '../data/timelineData'
 
 const Page5_Timeline = () => {
   const navigate = useNavigate()
+  const { playPageAudio } = useAudio()
   const [activeNodeIndex, setActiveNodeIndex] = useState(0)
   const [fullscreenImage, setFullscreenImage] = useState(null)
   const [showValentineQuestion, setShowValentineQuestion] = useState(true)
@@ -14,7 +16,6 @@ const Page5_Timeline = () => {
   const [yesButtonScale, setYesButtonScale] = useState(1)
   const noButtonRef = useRef(null)
   const yesButtonRef = useRef(null)
-  const audioRef = useRef(null)
 
   const handleNodeClick = (index) => {
     setActiveNodeIndex(index)
@@ -126,40 +127,14 @@ const Page5_Timeline = () => {
     }
   }, [showValentineQuestion])
 
-  // Background music
+  // Background music for page 5
   useEffect(() => {
-    const playAudio = () => {
-      if (audioRef.current) {
-        audioRef.current.play().catch(err => {
-          console.log('Audio play failed:', err)
-        })
-      }
-    }
-
-    playAudio()
-
-    const handleInteraction = () => {
-      playAudio()
-      document.removeEventListener('click', handleInteraction)
-    }
-    document.addEventListener('click', handleInteraction)
-
-    return () => {
-      document.removeEventListener('click', handleInteraction)
-      if (audioRef.current) {
-        audioRef.current.pause()
-      }
-    }
-  }, [])
+    playPageAudio(5, '/audio/page5-timeline.mp3')
+  }, [playPageAudio])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#FFF8F0] via-[#FFE4D6] to-[#FFD6C8] overflow-x-auto md:overflow-y-hidden relative pt-16">
       <Navigation />
-
-      {/* Background Music */}
-      <audio ref={audioRef} loop>
-        <source src="/audio/page5-timeline.mp3" type="audio/mpeg" />
-      </audio>
 
       {/* Valentine Question Modal */}
       <AnimatePresence>

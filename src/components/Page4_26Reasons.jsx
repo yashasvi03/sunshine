@@ -1,19 +1,20 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import confetti from 'canvas-confetti'
+import { useAudio } from '../context/AudioContext'
 import Navigation from './Navigation'
 import { reasons } from '../data/reasons'
 
 const Page4_26Reasons = () => {
   const navigate = useNavigate()
+  const { playPageAudio } = useAudio()
   const [balloons, setBalloons] = useState([])
   const [poppedBalloons, setPoppedBalloons] = useState([])
   const [activeReason, setActiveReason] = useState(null)
   const [allComplete, setAllComplete] = useState(false)
   const [showInstruction, setShowInstruction] = useState(true)
   const [isPopping, setIsPopping] = useState(false)
-  const audioRef = useRef(null)
 
   // Load popped balloons from localStorage on mount
   useEffect(() => {
@@ -63,31 +64,10 @@ const Page4_26Reasons = () => {
     }
   }, [poppedBalloons])
 
-  // Background music
+  // Background music for page 4
   useEffect(() => {
-    const playAudio = () => {
-      if (audioRef.current) {
-        audioRef.current.play().catch(err => {
-          console.log('Audio play failed:', err)
-        })
-      }
-    }
-
-    playAudio()
-
-    const handleInteraction = () => {
-      playAudio()
-      document.removeEventListener('click', handleInteraction)
-    }
-    document.addEventListener('click', handleInteraction)
-
-    return () => {
-      document.removeEventListener('click', handleInteraction)
-      if (audioRef.current) {
-        audioRef.current.pause()
-      }
-    }
-  }, [])
+    playPageAudio(4, '/audio/page4-26reasons.mp3')
+  }, [playPageAudio])
 
   const handleBalloonClick = (balloonId) => {
     const balloon = balloons.find(b => b.id === balloonId)
@@ -195,11 +175,6 @@ const Page4_26Reasons = () => {
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#FFF0F5] via-[#FFE4F1] to-[#FFD6E8] flex pt-16">
       <Navigation />
-
-      {/* Background Music */}
-      <audio ref={audioRef} loop>
-        <source src="/audio/page4-26reasons.mp3" type="audio/mpeg" />
-      </audio>
 
       {/* Animated sky background */}
       <div className="absolute inset-0 overflow-hidden">
