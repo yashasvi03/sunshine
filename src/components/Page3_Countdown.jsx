@@ -7,7 +7,7 @@ import { personalInfo } from '../data/personalInfo'
 
 const Page3_Countdown = () => {
   const navigate = useNavigate()
-  const { playPageAudio } = useAudio()
+  const { playPageAudio, stopAudio } = useAudio()
   const [timeData, setTimeData] = useState({ days: 0, hours: 0, minutes: 0 })
   const [showMessage, setShowMessage] = useState(false)
   const [showButton, setShowButton] = useState(false)
@@ -285,7 +285,10 @@ const Page3_Countdown = () => {
 
             {showButton && (
               <motion.button
-                onClick={() => navigate('/reasons')}
+                onClick={() => {
+                  stopAudio()
+                  navigate('/reasons')
+                }}
                 className="relative px-10 py-5 bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500 text-white rounded-2xl text-xl md:text-2xl font-bold shadow-2xl overflow-hidden"
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}

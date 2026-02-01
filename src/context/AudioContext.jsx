@@ -71,38 +71,28 @@ export const AudioProvider = ({ children }) => {
         })
       }
     } else {
-      // For other pages, stop current audio and play new one
-      console.log('Switching to different page audio, stopping current audio')
-
-      // First, pause any currently playing audio
-      if (isPlaying && audioRef.current) {
-        audioRef.current.pause()
-        console.log('Paused current audio')
-      }
+      // For other pages (4, 5, 6), play different audio
+      console.log('Playing audio for page', pageNumber)
 
       const fullSrc = window.location.origin + audioSrc
 
-      // Always set the new source and reset time for non-shared pages
+      // Set the new source
       audioRef.current.src = audioSrc
       audioRef.current.currentTime = 0
-      console.log('Set new audio source:', audioSrc)
 
-      // Small delay to ensure the previous audio is fully stopped
-      setTimeout(() => {
-        // Try to play immediately
-        const playPromise = audioRef.current.play()
+      // Try to play immediately
+      const playPromise = audioRef.current.play()
 
-        if (playPromise !== undefined) {
-          playPromise.then(() => {
-            console.log('Audio started successfully for page', pageNumber)
-            setIsPlaying(true)
-            setCurrentPage(pageNumber)
-          }).catch(err => {
-            console.log('Audio play failed, will retry on user interaction:', err)
-            pendingPlayRef.current = { pageNumber, audioSrc }
-          })
-        }
-      }, 100)
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          console.log('Audio started successfully for page', pageNumber)
+          setIsPlaying(true)
+          setCurrentPage(pageNumber)
+        }).catch(err => {
+          console.log('Audio play failed, will retry on user interaction:', err)
+          pendingPlayRef.current = { pageNumber, audioSrc }
+        })
+      }
     }
   }, [currentPage, isPlaying])
 
