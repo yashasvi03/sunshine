@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import confetti from 'canvas-confetti'
 import { timelineData } from '../data/timelineData'
 
 const Page5_Timeline = ({ onComplete }) => {
@@ -13,8 +14,22 @@ const Page5_Timeline = ({ onComplete }) => {
   const handlePolaroidClick = (moment) => {
     if (!moment.isFuture) {
       setFullscreenImage(moment)
+      // Confetti on photo open
+      confetti({
+        particleCount: 50,
+        spread: 60,
+        origin: { y: 0.6 },
+        colors: ['#FFD700', '#FF69B4', '#FFC0CB']
+      })
     } else {
-      onComplete()
+      // Special confetti for future moment
+      confetti({
+        particleCount: 150,
+        spread: 120,
+        origin: { y: 0.5 },
+        colors: ['#FFD700', '#FF1493', '#FF69B4', '#FFC0CB', '#FFB6C1']
+      })
+      setTimeout(onComplete, 800)
     }
   }
 
@@ -23,118 +38,416 @@ const Page5_Timeline = ({ onComplete }) => {
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F5DC] overflow-x-auto md:overflow-y-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-[#FFF8F0] via-[#FFE4D6] to-[#FFD6C8] overflow-x-auto md:overflow-y-hidden relative">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {/* Floating hearts */}
+        {Array.from({ length: 15 }).map((_, i) => (
+          <motion.div
+            key={`heart-${i}`}
+            className="absolute text-2xl opacity-20"
+            style={{
+              left: `${Math.random() * 100}%`,
+              bottom: '-5%',
+            }}
+            animate={{
+              y: [0, -window.innerHeight - 50],
+              x: [0, (Math.random() - 0.5) * 100],
+              opacity: [0, 0.3, 0.3, 0],
+              rotate: [0, 360],
+            }}
+            transition={{
+              duration: 12 + Math.random() * 8,
+              repeat: Infinity,
+              delay: i * 1.2,
+              ease: 'linear'
+            }}
+          >
+            ❤️
+          </motion.div>
+        ))}
+
+        {/* Sparkles */}
+        {Array.from({ length: 20 }).map((_, i) => (
+          <motion.div
+            key={`sparkle-${i}`}
+            className="absolute text-xl"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              scale: [0, 1, 0],
+              rotate: [0, 180, 360],
+              opacity: [0, 1, 0]
+            }}
+            transition={{
+              duration: 3,
+              delay: i * 0.3,
+              repeat: Infinity,
+              repeatDelay: 2
+            }}
+          >
+            ✨
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Decorative background blobs */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-20 left-10 w-96 h-96 bg-pink-200 rounded-full blur-[120px] opacity-30 animate-pulse" />
+        <div className="absolute bottom-20 right-10 w-80 h-80 bg-rose-200 rounded-full blur-[100px] opacity-25" style={{ animationDelay: '1.5s' }} />
+        <div className="absolute top-1/2 left-1/3 w-72 h-72 bg-orange-200 rounded-full blur-[110px] opacity-20 animate-pulse" style={{ animationDelay: '3s' }} />
+      </div>
       {/* Desktop: Horizontal Timeline */}
-      <div className="hidden md:flex items-center min-h-screen px-12 py-12">
+      <div className="hidden md:flex items-center min-h-screen px-12 py-12 relative z-10">
         <div className="flex items-center space-x-32 min-w-max">
           {timelineData.map((moment, index) => (
             <div key={moment.id} className="flex flex-col items-center">
               {/* Polaroid Photo */}
               <motion.div
-                className={`mb-8 cursor-pointer ${
-                  activeNodeIndex === index ? 'scale-100 opacity-100' : 'scale-90 opacity-50'
+                className={`mb-8 cursor-pointer relative group ${
+                  activeNodeIndex === index ? 'scale-100 opacity-100' : 'scale-90 opacity-70'
                 }`}
                 style={{
                   rotate: `${moment.polaroidRotation}deg`,
                   transition: 'all 0.5s ease'
                 }}
-                whileHover={{ scale: 1.05, rotate: 0 }}
+                initial={{ opacity: 0, y: -50 }}
+                animate={{ opacity: activeNodeIndex === index ? 1 : 0.7, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.15 }}
+                whileHover={{
+                  scale: 1.1,
+                  rotate: 0,
+                  zIndex: 50,
+                  transition: { duration: 0.3 }
+                }}
                 onClick={() => handlePolaroidClick(moment)}
               >
-                <div className="bg-white p-4 shadow-2xl rounded-sm">
+                {/* Glow effect on hover */}
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 rounded-md blur-xl opacity-0 group-hover:opacity-60"
+                  style={{ zIndex: -1 }}
+                  transition={{ duration: 0.3 }}
+                />
+
+                <div className="bg-white p-4 shadow-2xl rounded-sm relative" style={{
+                  boxShadow: '0 10px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05)'
+                }}>
                   {moment.isFuture ? (
-                    /* Future placeholder */
-                    <div className="w-64 h-48 bg-gradient-to-br from-rose-gold to-gold flex items-center justify-center rounded-sm">
-                      <span className="text-9xl">?</span>
-                    </div>
+                    /* Future placeholder with animation */
+                    <motion.div
+                      className="w-64 h-48 bg-gradient-to-br from-rose-400 via-pink-400 to-purple-400 flex flex-col items-center justify-center rounded-sm relative overflow-hidden"
+                      animate={{
+                        backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
+                      }}
+                      transition={{
+                        duration: 5,
+                        repeat: Infinity,
+                        ease: 'linear'
+                      }}
+                      style={{
+                        backgroundSize: '200% 200%'
+                      }}
+                    >
+                      {/* Sparkles inside future card */}
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <motion.div
+                          key={i}
+                          className="absolute text-3xl"
+                          style={{
+                            left: `${20 + i * 15}%`,
+                            top: `${20 + i * 10}%`,
+                          }}
+                          animate={{
+                            scale: [0, 1.5, 0],
+                            rotate: [0, 180, 360],
+                            opacity: [0, 1, 0]
+                          }}
+                          transition={{
+                            duration: 2,
+                            delay: i * 0.4,
+                            repeat: Infinity,
+                            repeatDelay: 1
+                          }}
+                        >
+                          ✨
+                        </motion.div>
+                      ))}
+                      <motion.span
+                        className="text-9xl text-white drop-shadow-2xl"
+                        animate={{
+                          scale: [1, 1.2, 1],
+                          rotate: [0, 10, -10, 0]
+                        }}
+                        transition={{
+                          duration: 3,
+                          repeat: Infinity
+                        }}
+                      >
+                        ?
+                      </motion.span>
+                      <p className="text-white text-lg font-bold mt-4">Our Future ✨</p>
+                    </motion.div>
                   ) : (
                     /* Photo with placeholder */
-                    <div className="w-64 h-48 bg-gray-300 flex items-center justify-center rounded-sm relative overflow-hidden">
+                    <div className="w-64 h-48 bg-gray-200 flex items-center justify-center rounded-sm relative overflow-hidden">
                       <img
                         src={moment.image}
                         alt={moment.title}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                         onError={(e) => {
                           e.target.style.display = 'none'
-                          e.target.parentElement.innerHTML = '<div class="text-gray-500 text-center p-4">Add photo:<br/>' + moment.image + '</div>'
+                          e.target.parentElement.innerHTML = '<div class="text-gray-500 text-center p-4 text-sm">📸 Add photo:<br/><code class="text-xs">' + moment.image + '</code></div>'
                         }}
                       />
+                      {/* Overlay gradient on hover */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </div>
                   )}
-                  {/* Tape effect */}
-                  <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-16 h-6 bg-gray-400 opacity-50 rotate-2" />
+                  {/* Enhanced tape effect */}
+                  <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-20 h-7 bg-amber-100 opacity-70 rotate-2 shadow-md"
+                    style={{
+                      background: 'linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(0,0,0,0.1) 100%), #FFF8DC'
+                    }}
+                  />
                 </div>
+
+                {/* Photo indicator dots */}
+                {!moment.isFuture && (
+                  <motion.div
+                    className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 flex gap-1"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.5 }}
+                  >
+                    {[...Array(3)].map((_, i) => (
+                      <div key={i} className="w-1.5 h-1.5 rounded-full bg-pink-400" />
+                    ))}
+                  </motion.div>
+                )}
               </motion.div>
 
               {/* Timeline Node */}
               <motion.div
-                className={`w-6 h-6 rounded-full border-4 border-white cursor-pointer z-10 ${
+                className={`w-8 h-8 rounded-full border-4 border-white cursor-pointer z-10 relative ${
                   activeNodeIndex === index
-                    ? 'bg-gold shadow-[0_0_20px_rgba(255,215,0,0.8)]'
-                    : 'bg-rose-gold'
+                    ? 'bg-gradient-to-br from-gold to-amber-400'
+                    : 'bg-gradient-to-br from-rose-400 to-pink-400'
                 }`}
                 onClick={() => handleNodeClick(index)}
-                whileHover={{ scale: 1.3 }}
-                animate={
+                initial={{ scale: 0 }}
+                animate={{
+                  scale: 1,
+                  boxShadow: moment.isFuture
+                    ? [
+                        '0 0 15px rgba(255,10,84,0.6)',
+                        '0 0 30px rgba(255,71,126,0.8)',
+                        '0 0 45px rgba(255,112,150,1)',
+                        '0 0 30px rgba(255,71,126,0.8)',
+                        '0 0 15px rgba(255,10,84,0.6)'
+                      ]
+                    : activeNodeIndex === index
+                    ? '0 0 20px rgba(255,215,0,0.8)'
+                    : '0 0 5px rgba(0,0,0,0.2)'
+                }}
+                transition={
                   moment.isFuture
-                    ? {
-                        boxShadow: [
-                          '0 0 10px #ff0a54',
-                          '0 0 20px #ff477e',
-                          '0 0 30px #ff7096',
-                          '0 0 20px #ff477e',
-                          '0 0 10px #ff0a54'
-                        ]
-                      }
-                    : {}
+                    ? { duration: 2, repeat: Infinity }
+                    : { duration: 0.3, delay: index * 0.1 }
                 }
-                transition={moment.isFuture ? { duration: 2, repeat: Infinity } : {}}
-              />
+                whileHover={{
+                  scale: 1.5,
+                  boxShadow: '0 0 30px rgba(255,215,0,1)'
+                }}
+                style={{
+                  boxShadow: activeNodeIndex === index
+                    ? '0 0 20px rgba(255,215,0,0.8)'
+                    : '0 4px 10px rgba(0,0,0,0.15)'
+                }}
+              >
+                {/* Inner pulse for active node */}
+                {activeNodeIndex === index && (
+                  <motion.div
+                    className="absolute inset-0 rounded-full bg-gold"
+                    animate={{
+                      scale: [1, 1.5, 1],
+                      opacity: [0.8, 0, 0.8]
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity
+                    }}
+                  />
+                )}
+
+                {/* Heart inside future node */}
+                {moment.isFuture && (
+                  <motion.div
+                    className="absolute inset-0 flex items-center justify-center text-xs"
+                    animate={{
+                      scale: [1, 1.3, 1]
+                    }}
+                    transition={{
+                      duration: 1.5,
+                      repeat: Infinity
+                    }}
+                  >
+                    ❤️
+                  </motion.div>
+                )}
+              </motion.div>
 
               {/* Caption */}
-              <div className="mt-8 text-center max-w-xs">
-                <h3 className="text-rose-gold font-bold text-lg mb-2">{moment.date}</h3>
-                <p className="text-gray-600 text-sm">{moment.caption}</p>
-              </div>
+              <motion.div
+                className="mt-8 text-center max-w-xs"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.15 + 0.3 }}
+              >
+                <motion.h3
+                  className="text-transparent bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text font-bold text-xl mb-2"
+                  whileHover={{ scale: 1.05 }}
+                >
+                  {moment.date}
+                </motion.h3>
+                <p className="text-gray-700 text-base leading-relaxed font-medium">
+                  {moment.caption}
+                </p>
+                {/* Decorative underline */}
+                <motion.div
+                  className="mt-2 mx-auto w-16 h-1 bg-gradient-to-r from-transparent via-pink-400 to-transparent rounded-full"
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ delay: index * 0.15 + 0.5 }}
+                />
+              </motion.div>
             </div>
           ))}
         </div>
 
-        {/* Timeline Line */}
-        <div className="absolute left-0 right-0 top-1/2 transform -translate-y-1/2 h-1 bg-rose-gold -z-10 mx-12" />
+        {/* Enhanced Timeline Line */}
+        <div className="absolute left-0 right-0 top-1/2 transform -translate-y-1/2 mx-12 -z-10">
+          {/* Base line */}
+          <div className="h-2 bg-gradient-to-r from-rose-300 via-pink-300 to-rose-300 rounded-full opacity-50" />
+
+          {/* Animated progress line */}
+          <motion.div
+            className="absolute top-0 left-0 h-2 bg-gradient-to-r from-rose-500 via-pink-500 to-purple-500 rounded-full"
+            initial={{ width: '0%' }}
+            animate={{ width: '100%' }}
+            transition={{ duration: 2, delay: 0.5, ease: 'easeInOut' }}
+          />
+
+          {/* Glowing orb moving along timeline */}
+          <motion.div
+            className="absolute top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gold rounded-full"
+            style={{
+              boxShadow: '0 0 20px rgba(255,215,0,0.8), 0 0 40px rgba(255,215,0,0.5)'
+            }}
+            animate={{
+              left: ['0%', '100%']
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              ease: 'linear'
+            }}
+          />
+        </div>
       </div>
 
       {/* Mobile: Vertical Timeline */}
-      <div className="md:hidden py-12 px-6">
+      <div className="md:hidden py-12 px-6 relative z-10">
+        <motion.h1
+          className="text-4xl font-bold text-center mb-12 bg-gradient-to-r from-rose-600 via-pink-600 to-purple-600 bg-clip-text text-transparent"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          Our Story Together
+        </motion.h1>
+
         <div className="space-y-16">
           {timelineData.map((moment, index) => (
-            <div key={moment.id} className="flex gap-6">
+            <motion.div
+              key={moment.id}
+              className="flex gap-6"
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.2 }}
+            >
               {/* Timeline Node */}
               <div className="flex flex-col items-center">
                 <motion.div
-                  className={`w-6 h-6 rounded-full border-4 border-white cursor-pointer ${
+                  className={`w-8 h-8 rounded-full border-4 border-white cursor-pointer relative ${
                     activeNodeIndex === index
-                      ? 'bg-gold shadow-[0_0_20px_rgba(255,215,0,0.8)]'
-                      : 'bg-rose-gold'
+                      ? 'bg-gradient-to-br from-gold to-amber-400'
+                      : 'bg-gradient-to-br from-rose-400 to-pink-400'
                   }`}
                   onClick={() => handleNodeClick(index)}
-                  animate={
+                  initial={{ scale: 0 }}
+                  animate={{
+                    scale: 1,
+                    boxShadow: moment.isFuture
+                      ? [
+                          '0 0 10px rgba(255,10,84,0.6)',
+                          '0 0 20px rgba(255,71,126,0.8)',
+                          '0 0 30px rgba(255,112,150,1)',
+                          '0 0 20px rgba(255,71,126,0.8)',
+                          '0 0 10px rgba(255,10,84,0.6)'
+                        ]
+                      : activeNodeIndex === index
+                      ? '0 0 15px rgba(255,215,0,0.8)'
+                      : '0 0 5px rgba(0,0,0,0.2)'
+                  }}
+                  transition={
                     moment.isFuture
-                      ? {
-                          boxShadow: [
-                            '0 0 10px #ff0a54',
-                            '0 0 20px #ff477e',
-                            '0 0 30px #ff7096',
-                            '0 0 20px #ff477e',
-                            '0 0 10px #ff0a54'
-                          ]
-                        }
-                      : {}
+                      ? { duration: 2, repeat: Infinity }
+                      : { delay: index * 0.2 }
                   }
-                  transition={moment.isFuture ? { duration: 2, repeat: Infinity } : {}}
-                />
+                  whileTap={{ scale: 1.3 }}
+                  style={{
+                    boxShadow: activeNodeIndex === index
+                      ? '0 0 15px rgba(255,215,0,0.8)'
+                      : '0 4px 8px rgba(0,0,0,0.15)'
+                  }}
+                >
+                  {/* Inner pulse */}
+                  {activeNodeIndex === index && (
+                    <motion.div
+                      className="absolute inset-0 rounded-full bg-gold"
+                      animate={{
+                        scale: [1, 1.5, 1],
+                        opacity: [0.8, 0, 0.8]
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity
+                      }}
+                    />
+                  )}
+
+                  {/* Heart for future */}
+                  {moment.isFuture && (
+                    <motion.div
+                      className="absolute inset-0 flex items-center justify-center text-xs"
+                      animate={{ scale: [1, 1.3, 1] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                    >
+                      ❤️
+                    </motion.div>
+                  )}
+                </motion.div>
+
+                {/* Vertical line with gradient */}
                 {index < timelineData.length - 1 && (
-                  <div className="w-1 flex-1 bg-rose-gold mt-2" style={{ minHeight: '200px' }} />
+                  <motion.div
+                    className="w-1 flex-1 bg-gradient-to-b from-rose-400 via-pink-300 to-rose-400 mt-2 rounded-full"
+                    style={{ minHeight: '200px' }}
+                    initial={{ scaleY: 0, originY: 0 }}
+                    animate={{ scaleY: 1 }}
+                    transition={{ delay: index * 0.2 + 0.3, duration: 0.6 }}
+                  />
                 )}
               </div>
 
@@ -142,93 +455,299 @@ const Page5_Timeline = ({ onComplete }) => {
               <div className="flex-1 pb-8">
                 {/* Polaroid */}
                 <motion.div
-                  className="mb-4 cursor-pointer inline-block"
+                  className="mb-4 cursor-pointer inline-block relative group"
                   style={{ rotate: `${moment.polaroidRotation}deg` }}
-                  whileTap={{ scale: 0.95 }}
+                  whileTap={{ scale: 0.95, rotate: 0 }}
                   onClick={() => handlePolaroidClick(moment)}
                 >
-                  <div className="bg-white p-3 shadow-xl rounded-sm relative">
+                  {/* Glow on tap */}
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 rounded-md blur-lg opacity-0 group-active:opacity-50"
+                    style={{ zIndex: -1 }}
+                  />
+
+                  <div className="bg-white p-3 shadow-xl rounded-sm relative" style={{
+                    boxShadow: '0 8px 30px rgba(0,0,0,0.15)'
+                  }}>
                     {moment.isFuture ? (
-                      <div className="w-full h-48 bg-gradient-to-br from-rose-gold to-gold flex items-center justify-center rounded-sm">
-                        <span className="text-7xl">?</span>
-                      </div>
+                      <motion.div
+                        className="w-full h-48 bg-gradient-to-br from-rose-400 via-pink-400 to-purple-400 flex flex-col items-center justify-center rounded-sm relative overflow-hidden"
+                        animate={{
+                          backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
+                        }}
+                        transition={{
+                          duration: 5,
+                          repeat: Infinity,
+                          ease: 'linear'
+                        }}
+                        style={{
+                          backgroundSize: '200% 200%'
+                        }}
+                      >
+                        {/* Sparkles */}
+                        {Array.from({ length: 3 }).map((_, i) => (
+                          <motion.div
+                            key={i}
+                            className="absolute text-2xl"
+                            style={{
+                              left: `${25 + i * 25}%`,
+                              top: `${30 + i * 15}%`,
+                            }}
+                            animate={{
+                              scale: [0, 1.2, 0],
+                              opacity: [0, 1, 0]
+                            }}
+                            transition={{
+                              duration: 2,
+                              delay: i * 0.5,
+                              repeat: Infinity,
+                              repeatDelay: 1
+                            }}
+                          >
+                            ✨
+                          </motion.div>
+                        ))}
+                        <motion.span
+                          className="text-7xl text-white drop-shadow-lg"
+                          animate={{
+                            scale: [1, 1.2, 1],
+                            rotate: [0, 10, -10, 0]
+                          }}
+                          transition={{
+                            duration: 3,
+                            repeat: Infinity
+                          }}
+                        >
+                          ?
+                        </motion.span>
+                        <p className="text-white text-base font-bold mt-3">Our Future ✨</p>
+                      </motion.div>
                     ) : (
-                      <div className="w-full h-48 bg-gray-300 flex items-center justify-center rounded-sm relative overflow-hidden">
+                      <div className="w-full h-48 bg-gray-200 flex items-center justify-center rounded-sm relative overflow-hidden">
                         <img
                           src={moment.image}
                           alt={moment.title}
                           className="w-full h-full object-cover"
                           onError={(e) => {
                             e.target.style.display = 'none'
-                            e.target.parentElement.innerHTML = '<div class="text-gray-500 text-center p-4 text-xs">Add photo:<br/>' + moment.image + '</div>'
+                            e.target.parentElement.innerHTML = '<div class="text-gray-500 text-center p-3 text-xs">📸 Add photo:<br/><code class="text-[10px]">' + moment.image + '</code></div>'
                           }}
                         />
                       </div>
                     )}
-                    {/* Tape */}
-                    <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-12 h-4 bg-gray-400 opacity-50" />
+                    {/* Enhanced tape */}
+                    <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-16 h-5 bg-amber-100 opacity-70 shadow-sm"
+                      style={{
+                        background: 'linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(0,0,0,0.1) 100%), #FFF8DC'
+                      }}
+                    />
                   </div>
                 </motion.div>
 
                 {/* Caption */}
-                <h3 className="text-rose-gold font-bold text-lg mb-1">{moment.date}</h3>
-                <p className="text-gray-600 text-sm">{moment.caption}</p>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: index * 0.2 + 0.3 }}
+                >
+                  <h3 className="text-transparent bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text font-bold text-lg mb-1">
+                    {moment.date}
+                  </h3>
+                  <p className="text-gray-700 text-base leading-relaxed">
+                    {moment.caption}
+                  </p>
+                </motion.div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
 
-      {/* Fullscreen Image Overlay */}
+      {/* Enhanced Fullscreen Image Overlay */}
       <AnimatePresence>
         {fullscreenImage && (
           <motion.div
-            className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-6"
+            className="fixed inset-0 bg-black/95 backdrop-blur-sm z-50 flex items-center justify-center p-4 md:p-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={closeFullscreen}
           >
+            {/* Floating hearts in background */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+              {Array.from({ length: 10 }).map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute text-3xl opacity-10"
+                  style={{
+                    left: `${Math.random() * 100}%`,
+                    top: `${Math.random() * 100}%`,
+                  }}
+                  animate={{
+                    y: [0, -30, 0],
+                    scale: [1, 1.3, 1],
+                    opacity: [0.1, 0.3, 0.1]
+                  }}
+                  transition={{
+                    duration: 3,
+                    delay: i * 0.4,
+                    repeat: Infinity
+                  }}
+                >
+                  ❤️
+                </motion.div>
+              ))}
+            </div>
+
             <motion.div
               className="relative max-w-4xl w-full"
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
+              initial={{ scale: 0.8, opacity: 0, rotateY: -20 }}
+              animate={{ scale: 1, opacity: 1, rotateY: 0 }}
+              exit={{ scale: 0.8, opacity: 0, rotateY: 20 }}
+              transition={{ type: 'spring', damping: 20 }}
               onClick={(e) => e.stopPropagation()}
             >
               {/* Close Button */}
-              <button
+              <motion.button
                 onClick={closeFullscreen}
-                className="absolute -top-12 right-0 text-white text-4xl hover:text-gold transition-colors"
+                className="absolute -top-10 md:-top-12 right-0 text-white text-4xl md:text-5xl font-light hover:text-gold transition-colors z-10"
+                whileHover={{ scale: 1.2, rotate: 90 }}
+                whileTap={{ scale: 0.9 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
               >
                 ×
-              </button>
+              </motion.button>
 
-              {/* Enlarged Photo */}
-              <div className="bg-white p-6 md:p-8 shadow-2xl">
-                <img
+              {/* Enlarged Polaroid-style Photo */}
+              <motion.div
+                className="bg-white p-6 md:p-10 shadow-2xl rounded-sm relative"
+                style={{
+                  boxShadow: '0 25px 50px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.1)'
+                }}
+                animate={{
+                  boxShadow: [
+                    '0 25px 50px rgba(0,0,0,0.5)',
+                    '0 30px 60px rgba(255,105,180,0.3)',
+                    '0 25px 50px rgba(0,0,0,0.5)'
+                  ]
+                }}
+                transition={{ duration: 3, repeat: Infinity }}
+              >
+                {/* Decorative corner stars */}
+                {[
+                  { top: '-10px', left: '-10px', rotate: 0 },
+                  { top: '-10px', right: '-10px', rotate: 90 },
+                  { bottom: '-10px', left: '-10px', rotate: -90 },
+                  { bottom: '-10px', right: '-10px', rotate: 180 }
+                ].map((pos, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute text-3xl"
+                    style={pos}
+                    animate={{
+                      scale: [1, 1.3, 1],
+                      rotate: [pos.rotate, pos.rotate + 180, pos.rotate + 360]
+                    }}
+                    transition={{
+                      duration: 3,
+                      delay: i * 0.2,
+                      repeat: Infinity
+                    }}
+                  >
+                    ✨
+                  </motion.div>
+                ))}
+
+                {/* Enhanced tape effect */}
+                <div className="absolute -top-4 md:-top-6 left-1/2 transform -translate-x-1/2 w-24 md:w-32 h-8 md:h-10 bg-amber-100 opacity-70 rotate-2 shadow-lg"
+                  style={{
+                    background: 'linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(0,0,0,0.1) 100%), #FFF8DC',
+                    boxShadow: '0 4px 10px rgba(0,0,0,0.2)'
+                  }}
+                />
+
+                <motion.img
                   src={fullscreenImage.image}
                   alt={fullscreenImage.title}
-                  className="w-full h-auto max-h-[70vh] object-contain"
+                  className="w-full h-auto max-h-[50vh] md:max-h-[60vh] object-contain rounded-sm"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.2 }}
                 />
-                <div className="mt-6 text-center">
-                  <h2 className="text-2xl font-bold text-rose-gold mb-2">
+
+                <motion.div
+                  className="mt-6 md:mt-8 text-center"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  {/* Decorative hearts */}
+                  <div className="flex justify-center gap-2 mb-4">
+                    {[...Array(5)].map((_, i) => (
+                      <motion.span
+                        key={i}
+                        className="text-xl md:text-2xl"
+                        animate={{
+                          y: [0, -8, 0],
+                          scale: [1, 1.2, 1]
+                        }}
+                        transition={{
+                          duration: 2,
+                          delay: i * 0.15,
+                          repeat: Infinity
+                        }}
+                      >
+                        💕
+                      </motion.span>
+                    ))}
+                  </div>
+
+                  <h2 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text text-transparent mb-3 md:mb-4">
                     {fullscreenImage.date}
                   </h2>
-                  <p className="text-gray-700 text-lg">{fullscreenImage.caption}</p>
-                </div>
-              </div>
+                  <p className="text-gray-700 text-lg md:text-2xl leading-relaxed font-medium px-4">
+                    {fullscreenImage.caption}
+                  </p>
+
+                  {/* Decorative underline */}
+                  <motion.div
+                    className="mt-4 mx-auto w-32 h-1 bg-gradient-to-r from-transparent via-pink-400 to-transparent rounded-full"
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ delay: 0.6 }}
+                  />
+                </motion.div>
+              </motion.div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Instructions for adding photos */}
-      <div className="fixed bottom-4 right-4 bg-white rounded-lg shadow-lg p-4 max-w-xs text-xs text-gray-600 z-20">
-        <p className="font-bold mb-1">📸 To add photos:</p>
-        <p>Place images in <code className="bg-gray-200 px-1">public/images/</code></p>
-        <p>Named: moment-1.jpg through moment-8.jpg</p>
-      </div>
+      {/* Enhanced Instructions for adding photos */}
+      <motion.div
+        className="fixed bottom-4 right-4 bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl p-4 max-w-xs text-xs text-gray-700 z-20 border-2 border-pink-200"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1 }}
+        whileHover={{ scale: 1.05 }}
+      >
+        <p className="font-bold mb-2 text-pink-600 flex items-center gap-2">
+          <span className="text-lg">📸</span>
+          <span>To add your photos:</span>
+        </p>
+        <p className="mb-1">
+          Place images in <code className="bg-pink-100 px-2 py-0.5 rounded text-pink-700">public/images/</code>
+        </p>
+        <p className="text-gray-600">
+          Named: <span className="font-semibold">moment-1.jpg</span> through <span className="font-semibold">moment-8.jpg</span>
+        </p>
+        {/* Decorative element */}
+        <div className="absolute -top-2 -right-2 text-2xl animate-bounce">
+          ✨
+        </div>
+      </motion.div>
     </div>
   )
 }
