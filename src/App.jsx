@@ -5,6 +5,7 @@ import Page3_Countdown from './components/Page3_Countdown'
 import Page4_26Reasons from './components/Page4_26Reasons'
 import Page5_Timeline from './components/Page5_Timeline'
 import Page6_BirthdayCake from './components/Page6_BirthdayCake'
+import Page7_GiftReveal from './components/Page7_GiftReveal'
 import { personalInfo } from './data/personalInfo'
 
 function App() {
@@ -43,7 +44,7 @@ function App() {
       case 6:
         return <Page6_BirthdayCake onComplete={goToNextPage} />
       case 7:
-        return <div className="min-h-screen flex items-center justify-center text-white">Page 7 - Coming Soon</div>
+        return <Page7_GiftReveal onComplete={goToNextPage} />
       default:
         return <Page1_Unlock onComplete={goToNextPage} />
     }
