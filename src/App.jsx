@@ -1,0 +1,54 @@
+import { useState } from 'react'
+import Page1_Unlock from './components/Page1_Unlock'
+import { personalInfo } from './data/personalInfo'
+
+function App() {
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageProgress, setPageProgress] = useState({
+    1: { visited: true, completed: false },
+    2: { visited: false, completed: false },
+    3: { visited: false, completed: false },
+    4: { visited: false, completed: false },
+    5: { visited: false, completed: false },
+    6: { visited: false, completed: false },
+    7: { visited: false, completed: false }
+  })
+
+  const goToNextPage = () => {
+    setPageProgress(prev => ({
+      ...prev,
+      [currentPage]: { ...prev[currentPage], completed: true },
+      [currentPage + 1]: { ...prev[currentPage + 1], visited: true }
+    }))
+    setCurrentPage(prev => prev + 1)
+  }
+
+  const renderPage = () => {
+    switch(currentPage) {
+      case 1:
+        return <Page1_Unlock onComplete={goToNextPage} />
+      case 2:
+        return <div className="min-h-screen flex items-center justify-center text-white">Page 2 - Coming Soon</div>
+      case 3:
+        return <div className="min-h-screen flex items-center justify-center text-white">Page 3 - Coming Soon</div>
+      case 4:
+        return <div className="min-h-screen flex items-center justify-center text-white">Page 4 - Coming Soon</div>
+      case 5:
+        return <div className="min-h-screen flex items-center justify-center text-white">Page 5 - Coming Soon</div>
+      case 6:
+        return <div className="min-h-screen flex items-center justify-center text-white">Page 6 - Coming Soon</div>
+      case 7:
+        return <div className="min-h-screen flex items-center justify-center text-white">Page 7 - Coming Soon</div>
+      default:
+        return <Page1_Unlock onComplete={goToNextPage} />
+    }
+  }
+
+  return (
+    <div className="App">
+      {renderPage()}
+    </div>
+  )
+}
+
+export default App
