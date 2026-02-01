@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Page1_Unlock from './components/Page1_Unlock'
+import Page2_BirthdayFacts from './components/Page2_BirthdayFacts'
 import { personalInfo } from './data/personalInfo'
 
 function App() {
@@ -28,7 +29,7 @@ function App() {
       case 1:
         return <Page1_Unlock onComplete={goToNextPage} />
       case 2:
-        return <div className="min-h-screen flex items-center justify-center text-white">Page 2 - Coming Soon</div>
+        return <Page2_BirthdayFacts onComplete={goToNextPage} />
       case 3:
         return <div className="min-h-screen flex items-center justify-center text-white">Page 3 - Coming Soon</div>
       case 4:
