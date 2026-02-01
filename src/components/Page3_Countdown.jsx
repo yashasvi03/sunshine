@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { personalInfo } from '../data/personalInfo'
 
 const Page3_Countdown = ({ onComplete }) => {
   const [timeData, setTimeData] = useState({ days: 0, hours: 0, minutes: 0 })
@@ -23,8 +24,7 @@ const Page3_Countdown = ({ onComplete }) => {
   // Calculate time difference from meeting date
   useEffect(() => {
     const calculateTime = () => {
-      // CUSTOMIZE THIS DATE - your meeting date
-      const meetingDate = new Date('2022-06-15')
+      const meetingDate = new Date(personalInfo.yourRelationship.meetingDate)
       const currentDate = new Date()
       const diffTime = Math.abs(currentDate - meetingDate)
 
@@ -43,12 +43,12 @@ const Page3_Countdown = ({ onComplete }) => {
     return () => clearInterval(interval)
   }, [])
 
-  // Show message after 8 seconds
+  // Show message after 5 seconds (reduced from 8)
   useEffect(() => {
     const messageTimer = setTimeout(() => {
       setShowMessage(true)
       setTimeout(() => setShowButton(true), 1000)
-    }, 8000)
+    }, 5000)
 
     return () => clearTimeout(messageTimer)
   }, [])
@@ -57,7 +57,7 @@ const Page3_Countdown = ({ onComplete }) => {
   const FlipDigit = ({ digit, delay }) => {
     return (
       <motion.div
-        className="inline-block bg-[#1a1a2e] text-gold text-6xl md:text-8xl font-bold px-4 py-6 rounded-lg shadow-2xl mx-1"
+        className="inline-block bg-gradient-to-br from-purple-900 to-pink-900 text-gold text-4xl md:text-6xl lg:text-7xl font-bold px-3 md:px-5 py-4 md:py-6 rounded-2xl shadow-2xl mx-0.5 md:mx-1"
         initial={{ rotateX: -90, opacity: 0 }}
         animate={{ rotateX: 0, opacity: 1 }}
         transition={{
@@ -66,7 +66,10 @@ const Page3_Countdown = ({ onComplete }) => {
           type: "spring",
           stiffness: 100
         }}
-        style={{ transformStyle: "preserve-3d" }}
+        style={{
+          transformStyle: "preserve-3d",
+          boxShadow: '0 10px 30px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1)'
+        }}
       >
         {digit}
       </motion.div>
@@ -77,7 +80,7 @@ const Page3_Countdown = ({ onComplete }) => {
   const FlipNumber = ({ number, delay }) => {
     const digits = number.toString().split('')
     return (
-      <div className="inline-flex">
+      <div className="inline-flex flex-wrap justify-center">
         {digits.map((digit, index) => (
           <FlipDigit key={index} digit={digit} delay={delay + index * 0.1} />
         ))}
@@ -86,45 +89,53 @@ const Page3_Countdown = ({ onComplete }) => {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-radial from-[#FFE5EC] via-[#FFC2D1] to-[#E0BBE4] flex items-center justify-center p-6">
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#FFF0F5] via-[#FFE4EC] to-[#FFD6E8] flex flex-col">
       {/* Floating Particles */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {Array.from({ length: 20 }).map((_, i) => (
+        {Array.from({ length: 25 }).map((_, i) => (
           <motion.div
             key={i}
-            className={`absolute ${i % 2 === 0 ? 'text-pink-400' : 'text-purple-400'} text-2xl`}
+            className="absolute text-2xl md:text-3xl"
             style={{
               left: `${Math.random() * 100}%`,
-              bottom: '-5%'
+              bottom: '-5%',
+              filter: 'drop-shadow(0 0 8px rgba(255,105,180,0.3))'
             }}
             animate={{
               y: [0, -window.innerHeight - 50],
               x: [0, (Math.random() - 0.5) * 100],
-              opacity: [0, 1, 1, 0],
-              rotate: [0, 360]
+              opacity: [0, 0.8, 0.8, 0],
+              rotate: [0, 360],
+              scale: [0.5, 1, 0.5]
             }}
             transition={{
-              duration: 8 + Math.random() * 4,
+              duration: 10 + Math.random() * 5,
               repeat: Infinity,
-              delay: i * 0.5,
+              delay: i * 0.4,
               ease: "linear"
             }}
           >
-            {i % 3 === 0 ? '❤️' : i % 3 === 1 ? '⭐' : '💫'}
+            {i % 3 === 0 ? '❤️' : i % 3 === 1 ? '⭐' : '💕'}
           </motion.div>
         ))}
       </div>
 
-      {/* Orbiting Words */}
+      {/* Decorative background blobs */}
       <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-pink-300 rounded-full blur-[100px] opacity-30 animate-pulse" />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-300 rounded-full blur-[120px] opacity-25" style={{ animationDelay: '1s' }} />
+      </div>
+
+      {/* Orbiting Words - More subtle */}
+      <div className="absolute inset-0 pointer-events-none hidden md:block">
         {floatingWords.map((word, index) => {
           const angle = (index / floatingWords.length) * 360
-          const radius = 280 // Distance from center
+          const radius = Math.min(window.innerWidth, window.innerHeight) * 0.35
 
           return (
             <motion.div
               key={index}
-              className="absolute text-lg md:text-xl font-semibold text-purple-600 whitespace-nowrap"
+              className="absolute text-sm lg:text-base font-medium text-purple-400 whitespace-nowrap"
               style={{
                 left: '50%',
                 top: '50%',
@@ -133,7 +144,7 @@ const Page3_Countdown = ({ onComplete }) => {
                 rotate: [angle, angle + 360],
               }}
               transition={{
-                duration: 60,
+                duration: 80,
                 repeat: Infinity,
                 ease: "linear"
               }}
@@ -142,7 +153,7 @@ const Page3_Countdown = ({ onComplete }) => {
                 style={{
                   transform: `rotate(${-angle}deg) translateX(${radius}px)`,
                 }}
-                className="opacity-70 hover:opacity-100 transition-opacity"
+                className="opacity-40"
               >
                 {word}
               </div>
@@ -151,88 +162,150 @@ const Page3_Countdown = ({ onComplete }) => {
         })}
       </div>
 
-      {/* Main Counter */}
-      <motion.div
-        className="relative z-10 text-center"
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1 }}
-      >
-        {/* Days */}
-        <div className="mb-8">
-          <FlipNumber number={timeData.days} delay={0} />
-          <div className="text-gold text-2xl md:text-3xl font-bold mt-2 tracking-widest">
-            DAYS
-          </div>
-        </div>
-
-        {/* Hours */}
-        <div className="mb-8">
-          <FlipNumber number={timeData.hours} delay={0.5} />
-          <div className="text-gold text-2xl md:text-3xl font-bold mt-2 tracking-widest">
-            HOURS
-          </div>
-        </div>
-
-        {/* Minutes */}
-        <div className="mb-8">
-          <FlipNumber number={timeData.minutes} delay={1.0} />
-          <div className="text-gold text-2xl md:text-3xl font-bold mt-2 tracking-widest">
-            MINUTES
-          </div>
-        </div>
-
-        {/* Together Label */}
+      {/* Main Content Container - Using Flexbox for proper spacing */}
+      <div className="flex-1 flex flex-col items-center justify-center px-4 py-8 md:py-12 relative z-10">
+        {/* Title */}
         <motion.div
-          className="text-[#1a1a2e] text-3xl md:text-4xl font-bold mt-6"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5, duration: 1 }}
-        >
-          TOGETHER
-        </motion.div>
-
-        {/* Pulse Effect */}
-        <motion.div
-          className="absolute inset-0 -z-10 bg-gold rounded-3xl opacity-10"
-          animate={{
-            scale: [1, 1.05, 1],
-            opacity: [0.1, 0.2, 0.1]
-          }}
-          transition={{
-            duration: 5,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-      </motion.div>
-
-      {/* Bottom Message */}
-      {showMessage && (
-        <motion.div
-          className="absolute bottom-20 left-0 right-0 text-center px-6"
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
+          className="mb-8 md:mb-12 text-center"
         >
-          <p className="text-2xl md:text-3xl text-[#1a1a2e] font-semibold mb-6">
-            But who's counting? (We are ❤️)
+          <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-rose-500 bg-clip-text text-transparent mb-2">
+            Our Journey Together
+          </h1>
+          <p className="text-lg md:text-xl text-purple-600 opacity-70">
+            Every moment counts ✨
           </p>
-
-          {showButton && (
-            <motion.button
-              onClick={onComplete}
-              className="px-8 py-4 bg-[#1a1a2e] text-gold rounded-full text-xl font-bold hover:bg-[#2d2d4a] transition-colors shadow-xl"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Continue
-            </motion.button>
-          )}
         </motion.div>
-      )}
+
+        {/* Counter Section */}
+        <motion.div
+          className="relative text-center mb-8 md:mb-12"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1, delay: 0.3 }}
+        >
+          {/* Glow effect behind counter */}
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-r from-pink-400 to-purple-400 rounded-3xl blur-3xl opacity-20"
+            animate={{
+              scale: [1, 1.1, 1],
+              opacity: [0.15, 0.25, 0.15]
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+
+          {/* Days */}
+          <div className="mb-6 md:mb-8 relative">
+            <FlipNumber number={timeData.days} delay={0} />
+            <div className="text-purple-600 text-xl md:text-3xl font-bold mt-3 tracking-widest">
+              DAYS
+            </div>
+          </div>
+
+          {/* Hours */}
+          <div className="mb-6 md:mb-8">
+            <FlipNumber number={timeData.hours} delay={0.5} />
+            <div className="text-purple-600 text-xl md:text-3xl font-bold mt-3 tracking-widest">
+              HOURS
+            </div>
+          </div>
+
+          {/* Minutes */}
+          <div className="mb-6 md:mb-8">
+            <FlipNumber number={timeData.minutes} delay={1.0} />
+            <div className="text-purple-600 text-xl md:text-3xl font-bold mt-3 tracking-widest">
+              MINUTES
+            </div>
+          </div>
+
+          {/* Together Label */}
+          <motion.div
+            className="text-transparent bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-3xl md:text-5xl font-bold mt-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.5, duration: 1 }}
+          >
+            TOGETHER
+          </motion.div>
+        </motion.div>
+
+        {/* Message and Button - Properly spaced */}
+        {showMessage && (
+          <motion.div
+            className="text-center px-6 max-w-2xl relative z-20"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
+          >
+            {/* Decorative hearts */}
+            <div className="flex justify-center gap-2 mb-4">
+              {[...Array(5)].map((_, i) => (
+                <motion.span
+                  key={i}
+                  className="text-2xl md:text-3xl"
+                  animate={{
+                    y: [0, -10, 0],
+                    scale: [1, 1.2, 1]
+                  }}
+                  transition={{
+                    duration: 2,
+                    delay: i * 0.2,
+                    repeat: Infinity
+                  }}
+                >
+                  💖
+                </motion.span>
+              ))}
+            </div>
+
+            <p className="text-2xl md:text-3xl lg:text-4xl text-purple-800 font-bold mb-8 leading-relaxed">
+              But who's counting?
+            </p>
+            <p className="text-xl md:text-2xl text-pink-600 font-semibold mb-8">
+              (We are ❤️)
+            </p>
+
+            {showButton && (
+              <motion.button
+                onClick={onComplete}
+                className="relative px-10 py-5 bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500 text-white rounded-2xl text-xl md:text-2xl font-bold shadow-2xl overflow-hidden"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {/* Shine effect */}
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/30 to-white/0"
+                  animate={{
+                    x: ['-100%', '200%']
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: 'linear'
+                  }}
+                />
+                <span className="relative flex items-center justify-center gap-2">
+                  Continue Our Story
+                  <motion.span
+                    animate={{ x: [0, 5, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                  >
+                    →
+                  </motion.span>
+                </span>
+              </motion.button>
+            )}
+          </motion.div>
+        )}
+      </div>
     </div>
   )
 }
