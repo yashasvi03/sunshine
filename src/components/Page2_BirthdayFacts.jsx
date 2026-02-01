@@ -53,7 +53,7 @@ const Page2_BirthdayFacts = () => {
   // Background music - shared across pages 1-3
   useEffect(() => {
     playPageAudio(2, '/audio/pages-1-3-shared.mp3')
-  }, [])
+  }, [playPageAudio])
 
   const handleNext = () => {
     if (currentFactIndex < facts.length - 1) {

@@ -40,7 +40,7 @@ const Page1_Unlock = () => {
   // Background music - shared across pages 1-3
   useEffect(() => {
     playPageAudio(1, '/audio/pages-1-3-shared.mp3')
-  }, [])
+  }, [playPageAudio])
 
   const handleSubmit = (e) => {
     e.preventDefault()

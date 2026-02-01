@@ -1,4 +1,4 @@
-import { createContext, useContext, useRef, useEffect, useState } from 'react'
+import { createContext, useContext, useRef, useEffect, useState, useCallback } from 'react'
 
 const AudioContext = createContext()
 
@@ -14,47 +14,95 @@ export const AudioProvider = ({ children }) => {
   const audioRef = useRef(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentPage, setCurrentPage] = useState(null)
+  const pendingPlayRef = useRef(null)
 
-  // Initialize audio element
+  // Initialize audio element immediately
   useEffect(() => {
-    if (!audioRef.current) {
-      audioRef.current = new Audio()
-      audioRef.current.loop = true
-      audioRef.current.volume = 0.5
+    console.log('Initializing AudioContext')
+    audioRef.current = new Audio()
+    audioRef.current.loop = true
+    audioRef.current.volume = 0.5
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause()
+        audioRef.current = null
+      }
     }
   }, [])
 
-  const playPageAudio = (pageNumber, audioSrc) => {
-    if (!audioRef.current) return
+  // Set up user interaction listener for autoplay
+  useEffect(() => {
+    const handleInteraction = () => {
+      if (pendingPlayRef.current) {
+        const { pageNumber, audioSrc } = pendingPlayRef.current
+        console.log('User interaction detected, playing pending audio')
+        playPageAudio(pageNumber, audioSrc)
+        pendingPlayRef.current = null
+      }
+      document.removeEventListener('click', handleInteraction)
+      document.removeEventListener('keydown', handleInteraction)
+    }
+
+    document.addEventListener('click', handleInteraction)
+    document.addEventListener('keydown', handleInteraction)
+
+    return () => {
+      document.removeEventListener('click', handleInteraction)
+      document.removeEventListener('keydown', handleInteraction)
+    }
+  }, [playPageAudio])
+
+  const playPageAudio = useCallback((pageNumber, audioSrc) => {
+    if (!audioRef.current) {
+      console.warn('Audio element not initialized yet')
+      return
+    }
+
+    console.log(`Playing audio for page ${pageNumber}:`, audioSrc)
 
     // Pages 1-3 share the same song
     if (pageNumber >= 1 && pageNumber <= 3) {
       // If we're already playing the pages 1-3 song, just continue
       if (currentPage >= 1 && currentPage <= 3 && isPlaying) {
+        console.log('Already playing pages 1-3 song, continuing...')
         setCurrentPage(pageNumber)
         return
       }
 
       // Start the pages 1-3 song
-      audioRef.current.src = audioSrc
-      audioRef.current.play().catch(err => {
-        console.log('Audio play failed:', err)
+      const fullSrc = window.location.origin + audioSrc
+      console.log('Setting audio src:', audioSrc, 'Full:', fullSrc, 'Current:', audioRef.current.src)
+
+      if (audioRef.current.src !== fullSrc) {
+        audioRef.current.src = audioSrc
+      }
+
+      audioRef.current.play().then(() => {
+        console.log('Audio started successfully for page', pageNumber)
+        setIsPlaying(true)
+        setCurrentPage(pageNumber)
+      }).catch(err => {
+        console.log('Audio play failed, waiting for user interaction:', err)
+        pendingPlayRef.current = { pageNumber, audioSrc }
       })
-      setIsPlaying(true)
-      setCurrentPage(pageNumber)
     } else {
       // For other pages, stop current audio and play new one
-      if (audioRef.current.src !== audioSrc) {
+      const fullSrc = window.location.origin + audioSrc
+      if (audioRef.current.src !== fullSrc) {
         audioRef.current.src = audioSrc
         audioRef.current.currentTime = 0
       }
-      audioRef.current.play().catch(err => {
-        console.log('Audio play failed:', err)
+      audioRef.current.play().then(() => {
+        console.log('Audio started successfully for page', pageNumber)
+        setIsPlaying(true)
+        setCurrentPage(pageNumber)
+      }).catch(err => {
+        console.log('Audio play failed, waiting for user interaction:', err)
+        pendingPlayRef.current = { pageNumber, audioSrc }
       })
-      setIsPlaying(true)
-      setCurrentPage(pageNumber)
     }
-  }
+  }, [currentPage, isPlaying])
 
   const stopAudio = () => {
     if (audioRef.current) {

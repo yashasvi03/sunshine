@@ -61,7 +61,7 @@ const Page3_Countdown = () => {
   // Background music - shared across pages 1-3
   useEffect(() => {
     playPageAudio(3, '/audio/pages-1-3-shared.mp3')
-  }, [])
+  }, [playPageAudio])
 
   // Component for individual digit with flip animation
   const FlipDigit = ({ digit, delay }) => {
