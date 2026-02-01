@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
+import Navigation from './Navigation'
 import '../styles/animations.css'
 
-const Page1_Unlock = ({ onComplete }) => {
+const Page1_Unlock = () => {
+  const navigate = useNavigate()
   const [inputValue, setInputValue] = useState('')
   const [isCorrect, setIsCorrect] = useState(false)
   const [showError, setShowError] = useState(false)
@@ -47,7 +50,7 @@ const Page1_Unlock = ({ onComplete }) => {
 
       // Transition to next page after animation
       setTimeout(() => {
-        onComplete()
+        navigate('/birthday-facts')
       }, 4500)
     } else {
       setShowError(true)
@@ -62,6 +65,7 @@ const Page1_Unlock = ({ onComplete }) => {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-b from-deep-purple via-[#1a1a3e] to-navy-blue flex items-center justify-center">
+      <Navigation />
       {/* Enhanced Twinkling Stars Background */}
       <div className="absolute inset-0">
         {stars.map(star => (

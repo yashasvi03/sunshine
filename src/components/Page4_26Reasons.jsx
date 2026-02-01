@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import confetti from 'canvas-confetti'
+import Navigation from './Navigation'
 import { reasons } from '../data/reasons'
 
-const Page4_26Reasons = ({ onComplete }) => {
+const Page4_26Reasons = () => {
+  const navigate = useNavigate()
   const [balloons, setBalloons] = useState([])
   const [poppedBalloons, setPoppedBalloons] = useState([])
   const [activeReason, setActiveReason] = useState(null)
@@ -161,6 +164,7 @@ const Page4_26Reasons = ({ onComplete }) => {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#FFF0F5] via-[#FFE4F1] to-[#FFD6E8] flex">
+      <Navigation />
       {/* Animated sky background */}
       <div className="absolute inset-0 overflow-hidden">
         {/* Clouds */}
@@ -768,7 +772,7 @@ const Page4_26Reasons = ({ onComplete }) => {
               </motion.p>
 
               <motion.button
-                onClick={onComplete}
+                onClick={() => navigate('/timeline')}
                 className="px-12 py-6 bg-white text-purple-600 rounded-full text-2xl font-bold shadow-2xl hover:shadow-3xl transition-all"
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}

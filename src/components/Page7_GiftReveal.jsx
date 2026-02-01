@@ -1,10 +1,13 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import confetti from 'canvas-confetti'
+import Navigation from './Navigation'
 import { giftInfo } from '../data/giftInfo'
 import { personalInfo } from '../data/personalInfo'
 
-const Page7_GiftReveal = ({ onComplete }) => {
+const Page7_GiftReveal = () => {
+  const navigate = useNavigate()
   const [unwrapStage, setUnwrapStage] = useState(0)
   const [videoPlayed, setVideoPlayed] = useState(false)
   const [showGiftCard, setShowGiftCard] = useState(false)
@@ -119,6 +122,7 @@ const Page7_GiftReveal = ({ onComplete }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#FFF5F7] via-[#FFE4EC] to-[#FFD6E8] relative overflow-hidden">
+      <Navigation />
       {/* Animated Background */}
       <div className="absolute inset-0 pointer-events-none">
         {/* Floating sparkles */}

@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import confetti from 'canvas-confetti'
+import Navigation from './Navigation'
 import { facts, birthdayFacts } from '../data/birthdayFacts'
 import { personalInfo } from '../data/personalInfo'
 
-const Page2_BirthdayFacts = ({ onComplete }) => {
+const Page2_BirthdayFacts = () => {
+  const navigate = useNavigate()
   const [showCalendar, setShowCalendar] = useState(true)
   const [currentFactIndex, setCurrentFactIndex] = useState(0)
   const [calendarMonth, setCalendarMonth] = useState(1)
@@ -58,13 +61,14 @@ const Page2_BirthdayFacts = ({ onComplete }) => {
       origin: { y: 0.6 },
       colors: ['#FF1493', '#FF69B4', '#FFB6C1', '#FFC0CB']
     })
-    setTimeout(onComplete, 500)
+    setTimeout(() => navigate('/countdown'), 500)
   }
 
   const currentFact = facts[currentFactIndex]
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#FFF5F7] via-[#FFE5EC] to-[#FFD6E8] flex flex-col items-center justify-center p-6 relative overflow-hidden">
+      <Navigation />
       {/* Floating hearts background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {[...Array(20)].map((_, i) => (

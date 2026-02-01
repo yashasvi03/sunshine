@@ -1,9 +1,12 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import confetti from 'canvas-confetti'
+import Navigation from './Navigation'
 import { timelineData } from '../data/timelineData'
 
-const Page5_Timeline = ({ onComplete }) => {
+const Page5_Timeline = () => {
+  const navigate = useNavigate()
   const [activeNodeIndex, setActiveNodeIndex] = useState(0)
   const [fullscreenImage, setFullscreenImage] = useState(null)
 
@@ -29,7 +32,7 @@ const Page5_Timeline = ({ onComplete }) => {
         origin: { y: 0.5 },
         colors: ['#FFD700', '#FF1493', '#FF69B4', '#FFC0CB', '#FFB6C1']
       })
-      setTimeout(onComplete, 800)
+      setTimeout(() => navigate('/cake'), 800)
     }
   }
 
@@ -39,6 +42,7 @@ const Page5_Timeline = ({ onComplete }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#FFF8F0] via-[#FFE4D6] to-[#FFD6C8] overflow-x-auto md:overflow-y-hidden relative">
+      <Navigation />
       {/* Animated Background Elements */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {/* Floating hearts */}

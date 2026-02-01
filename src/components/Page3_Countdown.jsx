@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
+import Navigation from './Navigation'
 import { personalInfo } from '../data/personalInfo'
 
-const Page3_Countdown = ({ onComplete }) => {
+const Page3_Countdown = () => {
+  const navigate = useNavigate()
   const [timeData, setTimeData] = useState({ days: 0, hours: 0, minutes: 0 })
   const [showMessage, setShowMessage] = useState(false)
   const [showButton, setShowButton] = useState(false)
@@ -90,6 +93,7 @@ const Page3_Countdown = ({ onComplete }) => {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#FFF0F5] via-[#FFE4EC] to-[#FFD6E8] flex flex-col">
+      <Navigation />
       {/* Floating Particles */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {Array.from({ length: 25 }).map((_, i) => (
@@ -273,7 +277,7 @@ const Page3_Countdown = ({ onComplete }) => {
 
             {showButton && (
               <motion.button
-                onClick={onComplete}
+                onClick={() => navigate('/reasons')}
                 className="relative px-10 py-5 bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500 text-white rounded-2xl text-xl md:text-2xl font-bold shadow-2xl overflow-hidden"
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}

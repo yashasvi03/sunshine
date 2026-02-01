@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import confetti from 'canvas-confetti'
+import Navigation from './Navigation'
 
-const Page6_BirthdayCake = ({ onComplete }) => {
+const Page6_BirthdayCake = () => {
+  const navigate = useNavigate()
   const [candlesLit, setCandlesLit] = useState(Array(26).fill(true))
   const [showInstructions, setShowInstructions] = useState(true)
   const [celebrationStarted, setCelebrationStarted] = useState(false)
@@ -134,23 +137,23 @@ const Page6_BirthdayCake = ({ onComplete }) => {
     }, 500)
   }
 
-  // Candle positions - top tier (6 candles)
+  // Candle positions - top tier (6 candles) - adjusted to sit ON the top tier
   const topTierPositions = [
-    { x: 50, y: 35, angle: 0 },
-    { x: 65, y: 40, angle: 60 },
-    { x: 65, y: 55, angle: 120 },
-    { x: 50, y: 60, angle: 180 },
-    { x: 35, y: 55, angle: 240 },
-    { x: 35, y: 40, angle: 300 }
+    { x: 50, y: 52, angle: 0 },
+    { x: 62, y: 54, angle: 60 },
+    { x: 62, y: 60, angle: 120 },
+    { x: 50, y: 62, angle: 180 },
+    { x: 38, y: 60, angle: 240 },
+    { x: 38, y: 54, angle: 300 }
   ]
 
-  // Bottom tier (20 candles)
+  // Bottom tier (20 candles) - positioned ON the bottom tier
   const bottomTierPositions = Array.from({ length: 20 }, (_, i) => {
     const angle = (i / 20) * 360
-    const radius = 20
+    const radius = 28
     return {
       x: 50 + radius * Math.cos((angle * Math.PI) / 180),
-      y: 72 + radius * Math.sin((angle * Math.PI) / 180) * 0.5,
+      y: 76 + radius * Math.sin((angle * Math.PI) / 180) * 0.3,
       angle
     }
   })
@@ -159,6 +162,7 @@ const Page6_BirthdayCake = ({ onComplete }) => {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-b from-[#1a0033] via-[#2C0735] to-[#3d1450] flex flex-col items-center justify-center p-6">
+      <Navigation />
       {/* Animated Background Stars */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {Array.from({ length: 50 }).map((_, i) => (
@@ -848,7 +852,7 @@ const Page6_BirthdayCake = ({ onComplete }) => {
                 transition={{ delay: 1.3, type: 'spring' }}
               >
                 <motion.button
-                  onClick={onComplete}
+                  onClick={() => navigate('/gift')}
                   className="relative px-12 py-6 bg-gradient-to-r from-gold via-amber-400 to-gold rounded-full text-xl md:text-2xl font-bold shadow-2xl overflow-hidden group"
                   style={{
                     color: '#1a0033',
