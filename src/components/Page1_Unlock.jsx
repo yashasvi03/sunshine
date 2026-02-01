@@ -1,13 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import { useAudio } from '../context/AudioContext'
 import Navigation from './Navigation'
 import '../styles/animations.css'
 
 const Page1_Unlock = () => {
   const navigate = useNavigate()
-  const { playPageAudio } = useAudio()
+  const audioRef = useRef(null)
   const [inputValue, setInputValue] = useState('')
   const [isCorrect, setIsCorrect] = useState(false)
   const [showError, setShowError] = useState(false)
@@ -37,10 +36,30 @@ const Page1_Unlock = () => {
     return () => clearTimeout(timer)
   }, [isCorrect])
 
-  // Background music - shared across pages 1-3, only run once on mount
+  // Background music
   useEffect(() => {
-    playPageAudio(1, '/audio/pages-1-3-shared.mp3')
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const playAudio = () => {
+      if (audioRef.current) {
+        audioRef.current.play().catch(err => {
+          console.log('Audio play failed:', err)
+        })
+      }
+    }
+
+    playAudio()
+
+    const handleInteraction = () => {
+      playAudio()
+      document.removeEventListener('click', handleInteraction)
+    }
+    document.addEventListener('click', handleInteraction)
+
+    return () => {
+      document.removeEventListener('click', handleInteraction)
+      if (audioRef.current) {
+        audioRef.current.pause()
+      }
+    }
   }, [])
 
   const handleSubmit = (e) => {
@@ -74,6 +93,11 @@ const Page1_Unlock = () => {
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-b from-deep-purple via-[#1a1a3e] to-navy-blue flex items-center justify-center pt-16">
       <Navigation />
+
+      {/* Background Music */}
+      <audio ref={audioRef} loop>
+        <source src="/audio/pages-1-3-shared.mp3" type="audio/mpeg" />
+      </audio>
 
       {/* Enhanced Twinkling Stars Background */}
       <div className="absolute inset-0">

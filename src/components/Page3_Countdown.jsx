@@ -1,13 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import { useAudio } from '../context/AudioContext'
 import Navigation from './Navigation'
 import { personalInfo } from '../data/personalInfo'
 
 const Page3_Countdown = () => {
   const navigate = useNavigate()
-  const { playPageAudio, stopAudio } = useAudio()
+  const audioRef = useRef(null)
   const [timeData, setTimeData] = useState({ days: 0, hours: 0, minutes: 0 })
   const [showMessage, setShowMessage] = useState(false)
   const [showButton, setShowButton] = useState(false)
@@ -58,10 +57,30 @@ const Page3_Countdown = () => {
     return () => clearTimeout(messageTimer)
   }, [])
 
-  // Background music - shared across pages 1-3, only run once on mount
+  // Background music
   useEffect(() => {
-    playPageAudio(3, '/audio/pages-1-3-shared.mp3')
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const playAudio = () => {
+      if (audioRef.current) {
+        audioRef.current.play().catch(err => {
+          console.log('Audio play failed:', err)
+        })
+      }
+    }
+
+    playAudio()
+
+    const handleInteraction = () => {
+      playAudio()
+      document.removeEventListener('click', handleInteraction)
+    }
+    document.addEventListener('click', handleInteraction)
+
+    return () => {
+      document.removeEventListener('click', handleInteraction)
+      if (audioRef.current) {
+        audioRef.current.pause()
+      }
+    }
   }, [])
 
   // Component for individual digit with flip animation
@@ -102,6 +121,11 @@ const Page3_Countdown = () => {
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#FFF0F5] via-[#FFE4EC] to-[#FFD6E8] flex flex-col pt-16">
       <Navigation />
+
+      {/* Background Music */}
+      <audio ref={audioRef} loop>
+        <source src="/audio/pages-1-3-shared.mp3" type="audio/mpeg" />
+      </audio>
 
       {/* Floating Particles */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -286,10 +310,7 @@ const Page3_Countdown = () => {
 
             {showButton && (
               <motion.button
-                onClick={() => {
-                  stopAudio()
-                  navigate('/reasons')
-                }}
+                onClick={() => navigate('/reasons')}
                 className="relative px-10 py-5 bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500 text-white rounded-2xl text-xl md:text-2xl font-bold shadow-2xl overflow-hidden"
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
