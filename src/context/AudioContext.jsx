@@ -31,28 +31,6 @@ export const AudioProvider = ({ children }) => {
     }
   }, [])
 
-  // Set up user interaction listener for autoplay
-  useEffect(() => {
-    const handleInteraction = () => {
-      if (pendingPlayRef.current) {
-        const { pageNumber, audioSrc } = pendingPlayRef.current
-        console.log('User interaction detected, playing pending audio')
-        playPageAudio(pageNumber, audioSrc)
-        pendingPlayRef.current = null
-      }
-      document.removeEventListener('click', handleInteraction)
-      document.removeEventListener('keydown', handleInteraction)
-    }
-
-    document.addEventListener('click', handleInteraction)
-    document.addEventListener('keydown', handleInteraction)
-
-    return () => {
-      document.removeEventListener('click', handleInteraction)
-      document.removeEventListener('keydown', handleInteraction)
-    }
-  }, [playPageAudio])
-
   const playPageAudio = useCallback((pageNumber, audioSrc) => {
     if (!audioRef.current) {
       console.warn('Audio element not initialized yet')
@@ -103,6 +81,28 @@ export const AudioProvider = ({ children }) => {
       })
     }
   }, [currentPage, isPlaying])
+
+  // Set up user interaction listener for autoplay
+  useEffect(() => {
+    const handleInteraction = () => {
+      if (pendingPlayRef.current) {
+        const { pageNumber, audioSrc } = pendingPlayRef.current
+        console.log('User interaction detected, playing pending audio')
+        playPageAudio(pageNumber, audioSrc)
+        pendingPlayRef.current = null
+      }
+      document.removeEventListener('click', handleInteraction)
+      document.removeEventListener('keydown', handleInteraction)
+    }
+
+    document.addEventListener('click', handleInteraction)
+    document.addEventListener('keydown', handleInteraction)
+
+    return () => {
+      document.removeEventListener('click', handleInteraction)
+      document.removeEventListener('keydown', handleInteraction)
+    }
+  }, [playPageAudio])
 
   const stopAudio = () => {
     if (audioRef.current) {
