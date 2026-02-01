@@ -156,6 +156,11 @@ const Page5_Timeline = () => {
     <div className="min-h-screen bg-gradient-to-br from-[#FFF8F0] via-[#FFE4D6] to-[#FFD6C8] overflow-x-auto md:overflow-y-hidden relative pt-16">
       <Navigation />
 
+      {/* Background Music */}
+      <audio ref={audioRef} loop>
+        <source src="/audio/page5-timeline.mp3" type="audio/mpeg" />
+      </audio>
+
       {/* Valentine Question Modal */}
       <AnimatePresence>
         {showValentineQuestion && (
