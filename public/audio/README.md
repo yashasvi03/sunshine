@@ -4,15 +4,23 @@ Add your background music files to this directory. Background music will auto-pl
 
 ## Required Files
 
-### Pages 1-3 (Unlock, Birthday Facts, Countdown) - SHARED SONG
-**Filename:** `pages-1-3-shared.mp3`
-- **Special Feature:** This single song plays continuously across all three pages!
-- When navigating from Page 1 → Page 2 → Page 3, the song continues from the same timestamp
-- No restart or interruption when moving between these pages
-- Mysterious, magical beginning transitioning to upbeat and celebratory
-- Should build energy as the user progresses through the pages
-- **Suggested:** 2-3 minute instrumental that flows through different moods
-- **Important:** Must be long enough to cover the time spent on all three pages
+### Page 1 - Unlock
+**Filename:** `page1-unlock.mp3`
+- Mysterious and magical atmosphere
+- Creates anticipation and excitement
+- Suggested: Enchanting, mystical instrumental
+
+### Page 2 - Birthday Facts
+**Filename:** `page2-birthday-facts.mp3`
+- Fun and interesting vibe
+- Upbeat and engaging
+- Suggested: Light, curious melody
+
+### Page 3 - Countdown
+**Filename:** `page3-countdown.mp3`
+- Romantic and nostalgic
+- Celebrates time together
+- Suggested: Warm, loving instrumental
 
 ### Page 4 - 26 Reasons
 **Filename:** `page4-26reasons.mp3`
@@ -39,8 +47,7 @@ Add your background music files to this directory. Background music will auto-pl
 
 - **Format:** MP3 (best compatibility)
 - **Duration:**
-  - Pages 1-3 shared: 2-3 minutes (longer is better for continuous experience)
-  - Pages 4-5: 30-90 seconds (will loop automatically)
+  - Pages 1-5: 30-90 seconds each (will loop automatically)
 - **File Size:** Keep under 5 MB each for faster loading
 - **Volume:** Pre-normalize to consistent levels
 - **Bitrate:** 128-192 kbps recommended
@@ -48,4 +55,4 @@ Add your background music files to this directory. Background music will auto-pl
 
 ## How It Works
 
-The shared audio for pages 1-3 uses React Context to maintain playback state across page navigation. When you move from page 1 to 2 to 3, the same audio element continues playing without restarting, creating a seamless musical experience!
+Each page manages its own audio playback using local audio refs. When you navigate to a new page, the previous page's audio stops and the new page's audio begins, creating a unique musical atmosphere for each section of the birthday experience!

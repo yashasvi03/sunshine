@@ -96,7 +96,7 @@ const Page1_Unlock = () => {
 
       {/* Background Music */}
       <audio ref={audioRef} loop>
-        <source src="/audio/pages-1-3-shared.mp3" type="audio/mpeg" />
+        <source src="/audio/page1-unlock.mp3" type="audio/mpeg" />
       </audio>
 
       {/* Enhanced Twinkling Stars Background */}

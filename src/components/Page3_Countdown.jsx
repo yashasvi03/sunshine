@@ -124,7 +124,7 @@ const Page3_Countdown = () => {
 
       {/* Background Music */}
       <audio ref={audioRef} loop>
-        <source src="/audio/pages-1-3-shared.mp3" type="audio/mpeg" />
+        <source src="/audio/page3-countdown.mp3" type="audio/mpeg" />
       </audio>
 
       {/* Floating Particles */}
