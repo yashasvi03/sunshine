@@ -166,7 +166,7 @@ const Page3_Countdown = () => {
       {/* Orbiting Words - More subtle */}
       <div className="absolute inset-0 pointer-events-none hidden md:block">
         {floatingWords.map((word, index) => {
-          const angle = (index / floatingWords.length) * 360
+          const startAngle = (index / floatingWords.length) * 360
           const radius = Math.min(window.innerWidth, window.innerHeight) * 0.35
 
           return (
@@ -177,8 +177,9 @@ const Page3_Countdown = () => {
                 left: '50%',
                 top: '50%',
               }}
+              initial={{ rotate: startAngle }}
               animate={{
-                rotate: [angle, angle + 360],
+                rotate: startAngle + 360,
               }}
               transition={{
                 duration: 80,
@@ -186,14 +187,23 @@ const Page3_Countdown = () => {
                 ease: "linear"
               }}
             >
-              <div
+              <motion.div
                 style={{
-                  transform: `rotate(${-angle}deg) translateX(${radius}px)`,
+                  transform: `translateX(${radius}px)`,
                 }}
                 className="opacity-40"
+                initial={{ rotate: -startAngle }}
+                animate={{
+                  rotate: -startAngle - 360,
+                }}
+                transition={{
+                  duration: 80,
+                  repeat: Infinity,
+                  ease: "linear"
+                }}
               >
                 {word}
-              </div>
+              </motion.div>
             </motion.div>
           )
         })}
